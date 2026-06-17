@@ -3,7 +3,7 @@
 
 const CACHE = 'directtip-v1';
 const ASSETS = [
-  '/directtip.html',
+  '/directtip/directtip.html',
   '/manifest.json',
   'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap'
 ];
