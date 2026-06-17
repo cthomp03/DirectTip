@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0F0D0A">
+<meta name="description" content="Tip workers directly, 100% free. No platform cut ever.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230F0D0A'/><text y='.9em' font-size='80' x='10'>💸</text></svg>">
+<title>DirectTip — 100% Free Tipping Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --gold: #E8A020; --gold-dark: #B87A10;
+    --bg: #0F0D0A; --bg2: #1A1712; --bg3: #242018;
+    --border: rgba(232,160,32,0.18); --border-strong: rgba(232,160,32,0.4);
+    --text: #F5EDD8; --text-muted: #9A8E78; --text-dim: #5C5448;
+    --green: #3DBA7A; --green-bg: rgba(61,186,122,0.12);
+    --red: #E05555; --red-bg: rgba(224,85,85,0.1);
+    --radius: 16px; --radius-sm: 10px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 0 80px; -webkit-tap-highlight-color: transparent; }
+
+  header { width: 100%; max-width: 480px; padding: 28px 24px 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--gold); }
+  .logo span { color: var(--text); }
+  .tagline { font-size: 13px; color: var(--text-muted); letter-spacing: 0.4px; }
+
+  .screens { width: 100%; max-width: 480px; padding: 24px max(20px, env(safe-area-inset-left)) 0; }
+  .screen { display: none; flex-direction: column; gap: 18px; animation: fadeUp 0.3s ease; }
+  .screen.active { display: flex; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
+  .card-label { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+
+  .steps { display: flex; align-items: center; margin-bottom: 2px; }
+  .step-dot { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-dim); font-family: 'Syne', sans-serif; transition: all 0.25s; background: var(--bg3); flex-shrink: 0; }
+  .step-dot.done { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+  .step-dot.active { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); }
+  .step-line { flex: 1; height: 1.5px; background: var(--border); transition: background 0.25s; }
+  .step-line.done { background: var(--gold); }
+
+  .field { display: flex; flex-direction: column; gap: 8px; }
+  .field label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  input[type="text"] { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; border-radius: var(--radius-sm); }
+  input[type="text"]:focus { border-color: var(--gold); }
+  input[type="text"]::placeholder { color: var(--text-dim); }
+
+  .profile-preview { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+  .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+  .profile-info { flex: 1; min-width: 0; }
+  .profile-name { font-size: 15px; font-weight: 500; color: var(--text); font-family: 'Syne', sans-serif; }
+  .profile-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .amount-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; padding: 15px 10px; cursor: pointer; transition: all 0.15s; text-align: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .amount-btn .sub { display: block; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 400; color: var(--text-muted); margin-top: 3px; }
+  .amount-btn:hover { border-color: var(--gold); background: rgba(232,160,32,0.06); }
+  .amount-btn.selected { border-color: var(--gold); background: rgba(232,160,32,0.1); color: var(--gold); }
+  .amount-btn.selected .sub { color: var(--gold-dark); }
+
+  .custom-amount-wrap { position: relative; margin-top: 4px; }
+  .custom-amount-wrap span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 17px; color: var(--text-muted); font-weight: 500; pointer-events: none; }
+  .custom-amount-wrap input { padding-left: 30px; font-size: 18px; font-weight: 600; font-family: 'Syne', sans-serif; }
+
+  .tip-summary { background: rgba(232,160,32,0.06); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 26px 24px; text-align: center; }
+  .tip-to { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+  .tip-recipient-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
+  .tip-amount-display { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 6px; }
+  .tip-amount-words { font-size: 13px; color: var(--text-muted); }
+
+  textarea { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px; outline: none; resize: none; width: 100%; line-height: 1.6; transition: border-color 0.2s; -webkit-appearance: none; }
+  textarea:focus { border-color: var(--gold); }
+  textarea::placeholder { color: var(--text-dim); }
+
+  .btn-primary { background: var(--gold); color: var(--bg); border: none; border-radius: var(--radius-sm); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; padding: 15px 24px; cursor: pointer; width: 100%; transition: all 0.15s; letter-spacing: 0.3px; min-height: 50px; touch-action: manipulation; }
+  .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 11px 20px; cursor: pointer; transition: all 0.15s; white-space: nowrap; min-height: 50px; touch-action: manipulation; }
+  .btn-ghost:hover { border-color: var(--border-strong); color: var(--text); }
+  .btn-row { display: flex; gap: 10px; }
+  .btn-row .btn-ghost { flex: 0 0 auto; }
+  .btn-row .btn-primary { flex: 1; }
+
+  .error-msg { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.3); border-radius: var(--radius-sm); color: #F09595; font-size: 13px; padding: 10px 14px; display: none; }
+  .error-msg.show { display: block; }
+
+  .online-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--green-bg); color: var(--green); font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.3px; flex-shrink: 0; }
+  .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .help-text { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
+
+  /* ── GPS / RADAR SCREEN ── */
+  .gps-screen { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 6px 0 4px; }
+  .radar-wrap { position: relative; width: 200px; height: 200px; margin: 0 auto; flex-shrink: 0; }
+  .radar-canvas { display: block; }
+  .radar-center-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; background: var(--gold); border-radius: 50%; box-shadow: 0 0 0 5px rgba(232,160,32,0.2); z-index: 2; pointer-events: none; }
+  .gps-status { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: var(--text); margin-top: 14px; }
+  .gps-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; text-align: center; max-width: 260px; }
+  .gps-range-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,160,32,0.08); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .gps-range-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
+
+  /* ── NEARBY LIST ── */
+  .nearby-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .nearby-count { font-size: 13px; color: var(--text-muted); }
+  .nearby-refresh { font-size: 12px; color: var(--gold); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; }
+  .nearby-refresh:hover { color: var(--gold-dark); }
+
+  .nearby-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .nearby-card { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; min-height: 64px; }
+  .nearby-card:hover { border-color: var(--gold); background: rgba(232,160,32,0.04); transform: translateX(2px); }
+  .nearby-card.selected { border-color: var(--gold); background: rgba(232,160,32,0.08); }
+
+  .dist-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
+  .dist-close { background: var(--green-bg); color: var(--green); }
+  .dist-mid { background: rgba(232,160,32,0.1); color: var(--gold); }
+  .dist-far { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+  .no-nearby { text-align: center; padding: 32px 20px; color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+
+  /* ── TAB TOGGLE ── */
+  .search-tabs { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 3px; gap: 3px; }
+  .tab-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--text-muted); }
+  .tab-btn.active { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
+
+  /* ── PROCESSING / SUCCESS ── */
+  .processing { display: none; flex-direction: column; align-items: center; gap: 16px; padding: 32px; text-align: center; }
+  .processing.show { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-screen { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 16px 0; }
+  .success-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--green-bg); border: 2px solid rgba(61,186,122,0.35); display: flex; align-items: center; justify-content: center; animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .checkmark { width: 36px; height: 36px; stroke: var(--green); stroke-width: 2.5; fill: none; stroke-dasharray: 60; stroke-dashoffset: 60; animation: draw 0.5s 0.2s ease forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  .success-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); }
+  .success-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 300px; }
+
+  .success-receipt { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; width: 100%; display: flex; flex-direction: column; gap: 12px; }
+  .receipt-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+  .receipt-row .rk { color: var(--text-muted); }
+  .receipt-row .rv { color: var(--text); font-weight: 500; }
+  .receipt-row .rv.amount { color: var(--gold); font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
+  .receipt-divider { height: 1px; background: var(--border); }
+  .conf-code { font-size: 13px; letter-spacing: 2px; color: var(--text-dim); text-align: center; margin-top: 4px; }
+
+  /* ── AD BANNER (fixed bottom) ── */
+  .ad-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 16px calc(8px + env(safe-area-inset-bottom));
+  }
+  .ad-label { font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; text-align: center; }
+  .ad-slot {
+    width: 100%; max-width: 480px; height: 52px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden; position: relative;
+    display: flex; align-items: center;
+  }
+  .ad-slide { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 14px; gap: 12px; opacity: 0; transition: opacity 0.5s; }
+  .ad-slide.visible { opacity: 1; }
+  .ad-icon { font-size: 22px; flex-shrink: 0; }
+  .ad-copy { flex: 1; min-width: 0; }
+  .ad-copy strong { display: block; font-size: 12px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
+  .ad-copy span { font-size: 11px; color: var(--text-muted); }
+  .ad-cta { font-size: 11px; font-weight: 600; color: var(--gold); white-space: nowrap; flex-shrink: 0; }
+  .ad-free-note { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 3px; }
+
+  /* body needs bottom padding for ad bar */
+  body { padding-bottom: 90px !important; }
+
+  /* ── FREE BADGE ── */
+  .free-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(61,186,122,0.1); border: 1px solid rgba(61,186,122,0.25); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: var(--green); letter-spacing: 0.3px; }
+
+  /* ── PAYOUT CONNECTIONS ── */
+  .payout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
+  .payout-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .payout-btn:hover { border-color: var(--border-strong); }
+  .payout-btn.connected { border-color: rgba(61,186,122,0.5); background: rgba(61,186,122,0.05); }
+  .payout-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+  .payout-name { font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; }
+  .payout-status { font-size: 10px; color: var(--text-dim); display: block; margin-top: 2px; }
+  .payout-btn.connected .payout-status { color: var(--green); }
+
+  /* ── WHY FREE section ── */
+  .why-free { background: rgba(61,186,122,0.05); border: 1px solid rgba(61,186,122,0.15); border-radius: var(--radius); padding: 18px 20px; }
+  .why-free-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .why-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+  .why-row:last-child { margin-bottom: 0; }
+  .why-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .why-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+  .why-text strong { color: var(--text); font-weight: 500; }
+
+  /* GPS denied banner */
+  .gps-denied { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.3); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .gps-denied-title { font-size: 14px; font-weight: 600; color: #F09595; }
+  .gps-denied-body { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+  /* manual ID tab */
+  .demo-profiles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .demo-chip:hover { border-color: var(--gold); color: var(--text); }
+  .demo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+    background: var(--bg2); border-top: 1px solid var(--border);
+    display: flex; align-items: stretch;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .nav-btn {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; padding: 10px 8px; border: none; background: transparent;
+    color: var(--text-dim); cursor: pointer; transition: color 0.15s;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    min-height: 56px;
+  }
+  .nav-btn.active { color: var(--gold); }
+  .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-indicator { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity 0.2s; margin-top: 1px; }
+  .nav-btn.active .nav-indicator { opacity: 1; }
+
+  /* ad bar moves up when nav is shown */
+  .ad-bar { bottom: 56px !important; bottom: calc(56px + env(safe-area-inset-bottom)) !important; }
+  body { padding-bottom: 130px !important; }
+
+  /* ── DASHBOARD ── */
+  .dash-header { display: flex; align-items: center; gap: 14px; margin-bottom: 2px; }
+  .dash-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(245,158,58,0.12); color: #F59E3A; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; flex-shrink: 0; }
+  .dash-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); }
+  .dash-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .dash-id { font-size: 11px; color: var(--gold); margin-top: 3px; letter-spacing: 0.5px; }
+
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .stat-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
+  .stat-card.highlight { background: rgba(232,160,32,0.07); border-color: var(--border-strong); }
+  .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--text); line-height: 1; }
+  .stat-card.highlight .stat-value { color: var(--gold); }
+  .stat-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .stat-trend { font-size: 11px; color: var(--green); margin-top: 4px; }
+
+  /* bar chart */
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; padding: 0 2px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--border); transition: height 0.6s cubic-bezier(0.34,1.2,0.64,1); min-height: 4px; }
+  .bar.today { background: var(--gold); }
+  .bar-day { font-size: 10px; color: var(--text-dim); }
+
+  /* tip feed */
+  .tip-feed { display: flex; flex-direction: column; gap: 0; }
+  .feed-item { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; font-family: 'Syne', sans-serif; flex-shrink: 0; }
+  .feed-info { flex: 1; min-width: 0; }
+  .feed-name { font-size: 14px; font-weight: 500; color: var(--text); }
+  .feed-msg { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .feed-time { font-size: 11px; color: var(--text-dim); }
+  .feed-amount { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--green); flex-shrink: 0; }
+
+  /* payout section */
+  .payout-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .payout-connected { display: flex; align-items: center; gap: 10px; }
+  .payout-icon-lg { font-size: 24px; }
+  .payout-info strong { display: block; font-size: 14px; color: var(--text); }
+  .payout-info span { font-size: 12px; color: var(--text-muted); }
+  .btn-sm { background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 16px; cursor: pointer; touch-action: manipulation; white-space: nowrap; }
+  .btn-sm-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer; touch-action: manipulation; }
+
+  .checkin-toggle { display: flex; align-items: center; justify-content: space-between; }
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+  .toggle { width: 44px; height: 26px; background: var(--bg3); border: 1px solid var(--border); border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; touch-action: manipulation; flex-shrink: 0; }
+  .toggle.on { background: var(--green); border-color: var(--green); }
+  .toggle-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: var(--text-dim); border-radius: 50%; transition: all 0.2s; }
+  .toggle.on .toggle-knob { left: 21px; background: white; }
+  .toggle-label { font-size: 14px; color: var(--text); font-weight: 500; }
+  .toggle-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; margin-right: 5px; }
+  .offline-dot { width: 8px; height: 8px; background: var(--text-dim); border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+
+  /* ── AUTH SCREENS ── */
+  .auth-wrap { width: 100%; max-width: 480px; padding: 20px 20px 0; display: flex; flex-direction: column; gap: 18px; animation: fadeUp 0.3s ease; }
+  .auth-hero { text-align: center; padding: 20px 0 10px; }
+  .auth-logo { font-family: 'Syne', sans-serif; font-size: 38px; font-weight: 800; color: var(--gold); letter-spacing: -1px; }
+  .auth-logo span { color: var(--text); }
+  .auth-tagline { font-size: 14px; color: var(--text-muted); margin-top: 6px; line-height: 1.6; }
+  .auth-pills { display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+  .auth-pill { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-muted); }
+
+  .auth-tabs { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 3px; gap: 3px; }
+  .auth-tab { flex: 1; padding: 9px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--text-muted); touch-action: manipulation; }
+  .auth-tab.active { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
+
+  .auth-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .auth-field { display: flex; flex-direction: column; gap: 7px; }
+  .auth-field label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+  .auth-input { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; }
+  .auth-input:focus { border-color: var(--gold); }
+  .auth-input::placeholder { color: var(--text-dim); }
+
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .role-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; cursor: pointer; transition: all 0.15s; touch-action: manipulation; }
+  .role-btn:hover { border-color: var(--border-strong); }
+  .role-btn.selected { border-color: var(--gold); background: rgba(232,160,32,0.08); }
+  .role-icon { font-size: 24px; display: block; margin-bottom: 6px; }
+  .role-name { font-size: 13px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; display: block; }
+  .role-desc { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
+  .role-btn.selected .role-name { color: var(--gold); }
+
+  .auth-divider { display: flex; align-items: center; gap: 10px; }
+  .auth-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .auth-divider span { font-size: 12px; color: var(--text-dim); }
+
+  .btn-social { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 13px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; touch-action: manipulation; min-height: 50px; }
+  .btn-social:hover { border-color: var(--border-strong); }
+
+  .auth-terms { font-size: 11px; color: var(--text-dim); text-align: center; line-height: 1.6; }
+  .auth-terms a { color: var(--gold); text-decoration: none; }
+
+  .auth-error { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.3); border-radius: var(--radius-sm); color: #F09595; font-size: 13px; padding: 10px 14px; display: none; }
+  .auth-error.show { display: block; }
+
+  .strength-bar { height: 3px; border-radius: 2px; background: var(--bg3); margin-top: 6px; overflow: hidden; }
+  .strength-fill { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
+
+  /* account menu */
+  .account-menu { display: flex; flex-direction: column; gap: 0; }
+  .account-row { display: flex; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: opacity 0.15s; touch-action: manipulation; }
+  .account-row:last-child { border-bottom: none; }
+  .account-row:hover { opacity: 0.75; }
+  .account-row-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .account-row-info { flex: 1; }
+  .account-row-label { font-size: 14px; color: var(--text); font-weight: 500; }
+  .account-row-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+  .account-row-arrow { color: var(--text-dim); font-size: 16px; }
+
+  .account-avatar-lg { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin: 0 auto 12px; }
+  .account-name-lg { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); text-align: center; }
+  .account-role-lg { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+  .account-id-lg { font-size: 12px; color: var(--gold); text-align: center; margin-top: 4px; letter-spacing: 0.5px; }
+
+  /* install banner */
+  .install-banner { background: rgba(232,160,32,0.08); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .install-banner-text { flex: 1; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .install-banner-text strong { color: var(--text); display: block; margin-bottom: 2px; }
+  .install-banner-btn { background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 8px 12px; cursor: pointer; white-space: nowrap; touch-action: manipulation; }
+
+</style>
+</head>
+<body>
+
+
+<!-- AUTH: SPLASH / LOGIN / SIGNUP (shown before main app) -->
+<div id="auth-wrap">
+
+  <!-- SPLASH -->
+  <div class="auth-wrap" id="auth-splash">
+    <div class="auth-hero">
+      <div class="auth-logo">Direct<span>Tip</span></div>
+      <div class="auth-tagline">Tip the actual person who made your food,<br>delivered your order, or made your day.</div>
+      <div class="auth-pills">
+        <div class="auth-pill">✦ 100% free</div>
+        <div class="auth-pill">📍 GPS-based</div>
+        <div class="auth-pill">💸 No platform cut</div>
+        <div class="auth-pill">🏦 Bank + Venmo</div>
+      </div>
+    </div>
+
+    <!-- PWA Install banner (shown on iOS Safari) -->
+    <div class="install-banner" id="pwa-banner" style="display:none;">
+      <div style="font-size:28px;">📲</div>
+      <div class="install-banner-text">
+        <strong>Add to Home Screen</strong>
+        Tap <strong>Share → Add to Home Screen</strong> for the full app experience
+      </div>
+      <button class="install-banner-btn" onclick="document.getElementById('pwa-banner').style.display='none'">Got it</button>
+    </div>
+
+    <button class="btn-primary" onclick="showAuth('login')" style="margin-top:4px;">Get started →</button>
+    <button class="btn-ghost" onclick="continueAsGuest()" style="text-align:center;">Continue as guest (tip only)</button>
+    <div class="auth-terms">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="auth-wrap" id="auth-login" style="display:none;">
+    <div style="text-align:center;padding:10px 0 4px;">
+      <div class="auth-logo" style="font-size:28px;">Direct<span>Tip</span></div>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login" onclick="authTab('login')">Log in</button>
+      <button class="auth-tab" id="tab-signup" onclick="authTab('signup')">Sign up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="auth-card">
+        <div class="auth-field">
+          <label>Email</label>
+          <input class="auth-input" type="email" id="login-email" placeholder="you@email.com" autocomplete="email" />
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input class="auth-input" type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+        </div>
+        <div class="auth-error" id="login-error">Incorrect email or password. Try again.</div>
+        <button class="btn-primary" onclick="doLogin()">Log in →</button>
+        <div style="text-align:center;font-size:13px;color:var(--gold);cursor:pointer;" onclick="alert('Password reset coming soon!')">Forgot password?</div>
+      </div>
+
+      <div class="auth-divider"><div class="auth-divider-line"></div><span>or</span><div class="auth-divider-line"></div></div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn-social" onclick="socialLogin('Apple')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Continue with Apple
+        </button>
+        <button class="btn-social" onclick="socialLogin('Google')">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Continue with Google
+        </button>
+      </div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signup-form" style="display:none;">
+      <div class="auth-card">
+        <div style="margin-bottom:4px;">
+          <div class="card-label" style="margin-bottom:10px;">I am a...</div>
+          <div class="role-grid">
+            <div class="role-btn" id="role-worker" onclick="selectRole('worker')">
+              <span class="role-icon">👨‍🍳</span>
+              <span class="role-name">Worker</span>
+              <span class="role-desc">Receive tips directly</span>
+            </div>
+            <div class="role-btn" id="role-tipper" onclick="selectRole('tipper')">
+              <span class="role-icon">💸</span>
+              <span class="role-name">Tipper</span>
+              <span class="role-desc">Send tips to workers</span>
+            </div>
+          </div>
+        </div>
+        <div class="auth-field">
+          <label>Full name</label>
+          <input class="auth-input" type="text" id="signup-name" placeholder="Marcus Kim" autocomplete="name" />
+        </div>
+        <div class="auth-field" id="signup-role-field" style="display:none;">
+          <label>Your job title / role</label>
+          <input class="auth-input" type="text" id="signup-role" placeholder="Line Cook, Delivery Driver, Barista..." />
+        </div>
+        <div class="auth-field">
+          <label>Email</label>
+          <input class="auth-input" type="email" id="signup-email" placeholder="you@email.com" autocomplete="email" />
+        </div>
+        <div class="auth-field">
+          <label>Password</label>
+          <input class="auth-input" type="password" id="signup-password" placeholder="Min 8 characters" autocomplete="new-password" oninput="checkStrength(this.value)" />
+          <div class="strength-bar"><div class="strength-fill" id="strength-fill"></div></div>
+        </div>
+        <div class="auth-error" id="signup-error"></div>
+        <button class="btn-primary" onclick="doSignup()">Create account →</button>
+      </div>
+      <div class="auth-terms">By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>. Your location is never stored.</div>
+    </div>
+
+    <button class="btn-ghost" onclick="showAuth('splash')" style="text-align:center;">← Back</button>
+  </div>
+
+</div>
+
+<!-- MAIN APP (hidden until logged in) -->
+<div id="main-app" style="display:none;">
+<header>
+  <div style="display:flex;align-items:center;justify-content:space-between;width:100%;max-width:480px;padding:0 4px;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <div class="logo">Direct<span>Tip</span></div>
+      <div class="free-badge">✦ 100% Free</div>
+    </div>
+    <div id="header-status" style="font-size:12px;color:var(--text-dim);"></div>
+  </div>
+  <div class="tagline" id="header-tagline">Tip the person directly — zero fees, zero cuts</div>
+</header>
+
+<div class="screens">
+
+  <!-- SCREEN 1: GPS / Find -->
+  <div class="screen active" id="screen-1">
+    <div class="steps">
+      <div class="step-dot active">1</div>
+      <div class="step-line"></div>
+      <div class="step-dot">2</div>
+      <div class="step-line"></div>
+      <div class="step-dot">3</div>
+    </div>
+
+    <!-- Tab toggle -->
+    <div class="search-tabs">
+      <button class="tab-btn active" id="tab-nearby" onclick="switchTab('nearby')">📍 Nearby</button>
+      <button class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Type ID manually</button>
+    </div>
+
+    <!-- NEARBY TAB -->
+    <div id="panel-nearby">
+      <!-- GPS scanning state -->
+      <div id="gps-scanning" class="card" style="display:none;">
+        <div class="gps-screen">
+          <div class="radar-wrap">
+            <canvas class="radar-canvas" id="radar-canvas" width="200" height="200"></canvas>
+            <div class="radar-center-dot"></div>
+          </div>
+          <div class="gps-status" id="gps-status-text">Scanning nearby...</div>
+          <div class="gps-sub" id="gps-sub-text">Looking for workers within 50 meters</div>
+          <div class="gps-range-badge"><div class="gps-range-dot"></div>50m radius</div>
+        </div>
+      </div>
+
+      <!-- GPS permission prompt -->
+      <div id="gps-prompt" class="card">
+        <div class="card-label">Nearby workers</div>
+        <div style="text-align:center; padding: 10px 0 6px;">
+          <div style="font-size: 36px; margin-bottom: 12px;">📍</div>
+          <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700; margin-bottom:8px;">Find people around you</div>
+          <div style="font-size:13px; color:var(--text-muted); line-height:1.7; margin-bottom:20px;">DirectTip uses your GPS to show only workers within 50 meters — so you tip the right person, not a stranger across town.</div>
+          <button class="btn-primary" onclick="requestGPS()">Enable location →</button>
+          <div class="help-text" style="margin-top:10px; text-align:center;">Your location is never stored or shared.</div>
+        </div>
+      </div>
+
+      <!-- GPS denied -->
+      <div id="gps-denied" style="display:none;">
+        <div class="gps-denied">
+          <div class="gps-denied-title">Location access denied</div>
+          <div class="gps-denied-body">To use the Nearby feature, allow location access in your browser settings, or switch to the manual ID tab to find someone by their DirectTip ID.</div>
+        </div>
+      </div>
+
+      <!-- Nearby results -->
+      <div id="nearby-results" style="display:none;">
+        <div class="card">
+          <div class="nearby-header">
+            <div>
+              <div class="card-label" style="margin-bottom:2px;">Nearby workers</div>
+              <div class="nearby-count" id="nearby-count"></div>
+            </div>
+            <button class="nearby-refresh" onclick="rescan()">↻ Rescan</button>
+          </div>
+          <div class="nearby-list" id="nearby-list"></div>
+        </div>
+        <div id="nearby-selected-preview" style="display:none;">
+          <div class="card">
+            <div class="card-label">Selected</div>
+            <div class="profile-preview">
+              <div class="avatar" id="nearby-sel-avatar"></div>
+              <div class="profile-info">
+                <div class="profile-name" id="nearby-sel-name"></div>
+                <div class="profile-role" id="nearby-sel-role"></div>
+              </div>
+              <div class="online-badge"><div class="online-dot"></div>Nearby</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANUAL TAB -->
+    <div id="panel-manual" style="display:none;">
+      <div class="card">
+        <div class="card-label">Find by ID</div>
+        <div class="field">
+          <label>Enter their DirectTip ID</label>
+          <input type="text" id="tip-id-input" placeholder="e.g. @marcus_k or DT-4892" autocomplete="off" autocorrect="off" />
+          <div class="error-msg" id="id-error">No one found with that ID. Try a demo below.</div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="help-text" style="margin-bottom:10px;">Try a demo ID:</div>
+          <div class="demo-profiles">
+            <div class="demo-chip" onclick="fillId('@marcus_k')"><div class="demo-dot" style="background:#F59E3A;"></div>@marcus_k</div>
+            <div class="demo-chip" onclick="fillId('@priya_c')"><div class="demo-dot" style="background:#5CD6A2;"></div>@priya_c</div>
+            <div class="demo-chip" onclick="fillId('@james_d')"><div class="demo-dot" style="background:#8B8AE8;"></div>@james_d</div>
+            <div class="demo-chip" onclick="fillId('@sasha_m')"><div class="demo-dot" style="background:#E87070;"></div>@sasha_m</div>
+          </div>
+        </div>
+      </div>
+      <div id="manual-profile-result" style="display:none;">
+        <div class="card">
+          <div class="card-label">Recipient</div>
+          <div class="profile-preview">
+            <div class="avatar" id="result-avatar"></div>
+            <div class="profile-info">
+              <div class="profile-name" id="result-name"></div>
+              <div class="profile-role" id="result-role"></div>
+            </div>
+            <div class="online-badge"><div class="online-dot"></div>Active</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="why-free">
+      <div class="why-free-title">🎉 Why DirectTip is free</div>
+      <div class="why-row"><div class="why-icon">💸</div><div class="why-text"><strong>$0 taken from tips.</strong> Every cent you send goes straight to the worker — we never touch it.</div></div>
+      <div class="why-row"><div class="why-icon">🏦</div><div class="why-text"><strong>Connects to your bank, Venmo, Cash App & more.</strong> Workers cash out directly to wherever they already get paid.</div></div>
+      <div class="why-row"><div class="why-icon">📢</div><div class="why-text"><strong>We show small ads at the bottom.</strong> That's our only income. Tips stay completely untouched.</div></div>
+    </div>
+
+    <button class="btn-primary" id="btn-next-1" onclick="goToStep2()" disabled>Tip this person →</button>
+    <div class="help-text" style="text-align:center;">Workers share their DirectTip ID on receipts, name tags, or anywhere they work.</div>
+  </div>
+
+  <!-- SCREEN 2: Amount -->
+  <div class="screen" id="screen-2">
+    <div class="steps">
+      <div class="step-dot done">✓</div>
+      <div class="step-line done"></div>
+      <div class="step-dot active">2</div>
+      <div class="step-line"></div>
+      <div class="step-dot">3</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Tipping</div>
+      <div class="profile-preview">
+        <div class="avatar" id="s2-avatar"></div>
+        <div class="profile-info">
+          <div class="profile-name" id="s2-name"></div>
+          <div class="profile-role" id="s2-role"></div>
+        </div>
+        <div class="dist-badge" id="s2-dist-badge" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Choose amount</div>
+      <div class="amount-grid">
+        <button class="amount-btn" onclick="selectAmount(1,this)">$1<span class="sub">Quick thanks</span></button>
+        <button class="amount-btn" onclick="selectAmount(2,this)">$2<span class="sub">Appreciated</span></button>
+        <button class="amount-btn" onclick="selectAmount(5,this)">$5<span class="sub">Solid tip</span></button>
+        <button class="amount-btn" onclick="selectAmount(10,this)">$10<span class="sub">Really nice</span></button>
+        <button class="amount-btn" onclick="selectAmount(20,this)">$20<span class="sub">Generous</span></button>
+        <button class="amount-btn" onclick="selectAmount(50,this)">$50<span class="sub">Amazing!</span></button>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="help-text" style="margin-bottom:8px;">Or enter a custom amount:</div>
+        <div class="custom-amount-wrap">
+          <span>$</span>
+          <input type="text" id="custom-amount" placeholder="0.00" oninput="handleCustomAmount(this)" />
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Leave a message <span style="color:var(--text-dim);font-size:10px;font-weight:400;letter-spacing:0;">(optional)</span></div>
+      <textarea id="tip-message" rows="3" placeholder="The ramen was incredible, thanks for the care you put into it!"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="goBack(2)">← Back</button>
+      <button class="btn-primary" id="btn-next-2" onclick="goToStep3()" disabled>Review tip →</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: Review -->
+  <div class="screen" id="screen-3">
+    <div class="steps">
+      <div class="step-dot done">✓</div>
+      <div class="step-line done"></div>
+      <div class="step-dot done">✓</div>
+      <div class="step-line done"></div>
+      <div class="step-dot active">3</div>
+    </div>
+    <div class="tip-summary">
+      <div class="tip-to">Sending a tip to</div>
+      <div class="tip-recipient-name" id="s3-name"></div>
+      <div class="tip-amount-display" id="s3-amount"></div>
+      <div class="tip-amount-words" id="s3-words"></div>
+    </div>
+    <div class="card" id="s3-msg-preview" style="display:none;">
+      <div class="card-label">Your message</div>
+      <div id="s3-msg-text" style="font-size:14px;color:var(--text-muted);line-height:1.6;font-style:italic;"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Pay with</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text-muted);"><input type="radio" name="payment" value="card" checked style="accent-color:var(--gold);"> Credit / Debit card</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text-muted);"><input type="radio" name="payment" value="apple" style="accent-color:var(--gold);"> Apple Pay</label>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text-muted);"><input type="radio" name="payment" value="google" style="accent-color:var(--gold);"> Google Pay</label>
+      </div>
+      <div style="margin-top:12px;"><div class="help-text">💳 In a real version, card/wallet input appears here.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Where <span id="s3-first-name2"></span> receives it</div>
+      <div class="payout-grid">
+        <div class="payout-btn connected" onclick="togglePayout(this)">
+          <span class="payout-icon">🏦</span>
+          <span class="payout-name">Bank</span>
+          <span class="payout-status">✓ Connected</span>
+        </div>
+        <div class="payout-btn" onclick="togglePayout(this)">
+          <span class="payout-icon">💜</span>
+          <span class="payout-name">Venmo</span>
+          <span class="payout-status">Tap to link</span>
+        </div>
+        <div class="payout-btn" onclick="togglePayout(this)">
+          <span class="payout-icon">💚</span>
+          <span class="payout-name">Cash App</span>
+          <span class="payout-status">Tap to link</span>
+        </div>
+        <div class="payout-btn" onclick="togglePayout(this)">
+          <span class="payout-icon">🔵</span>
+          <span class="payout-name">Zelle</span>
+          <span class="payout-status">Tap to link</span>
+        </div>
+        <div class="payout-btn" onclick="togglePayout(this)">
+          <span class="payout-icon">🅿️</span>
+          <span class="payout-name">PayPal</span>
+          <span class="payout-status">Tap to link</span>
+        </div>
+        <div class="payout-btn" onclick="togglePayout(this)">
+          <span class="payout-icon">🍎</span>
+          <span class="payout-name">Apple Pay</span>
+          <span class="payout-status">Tap to link</span>
+        </div>
+      </div>
+      <div style="margin-top:12px;" class="help-text">Workers choose where they receive tips. 100% of the amount goes through — DirectTip takes nothing.</div>
+    </div>
+
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
+      <div style="font-size:13px;color:var(--text-muted);">100% goes to <span id="s3-first-name" style="color:var(--text);font-weight:500;"></span></div>
+      <div class="free-badge" style="font-size:10px;padding:2px 8px;">Zero fees</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="goBack(3)">← Back</button>
+      <button class="btn-primary" onclick="sendTip()">Send $<span id="s3-btn-amount"></span> tip ✦</button>
+    </div>
+  </div>
+
+  <!-- SCREEN 4: Processing -->
+  <div class="screen" id="screen-4">
+    <div class="processing show">
+      <div class="spinner"></div>
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;">Sending your tip...</div>
+      <div class="help-text">Securely routing directly to <span id="proc-name" style="color:var(--text);"></span></div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: Success -->
+  <div class="screen" id="screen-5">
+    <div class="success-screen">
+      <div class="success-icon">
+        <svg class="checkmark" viewBox="0 0 36 36"><polyline points="6,18 14,26 30,10"/></svg>
+      </div>
+      <div class="success-title">Tip sent! 🎉</div>
+      <div class="success-sub">Your tip went directly to <strong id="suc-name" style="color:var(--text)"></strong>. They'll be notified right away.</div>
+    </div>
+    <div class="success-receipt">
+      <div class="receipt-row"><span class="rk">Recipient</span><span class="rv" id="rec-name"></span></div>
+      <div class="receipt-row"><span class="rk">Role</span><span class="rv" id="rec-role"></span></div>
+      <div class="receipt-divider"></div>
+      <div class="receipt-row"><span class="rk">Amount</span><span class="rv amount" id="rec-amount"></span></div>
+      <div class="receipt-row" id="rec-msg-row" style="display:none;align-items:flex-start;"><span class="rk">Message</span><span class="rv" id="rec-msg" style="max-width:200px;text-align:right;font-size:13px;color:var(--text-muted);"></span></div>
+      <div class="receipt-divider"></div>
+      <div class="receipt-row"><span class="rk">Status</span><span class="rv" style="color:var(--green);">Delivered ✓</span></div>
+      <div class="conf-code" id="conf-code"></div>
+    </div>
+    <button class="btn-primary" onclick="resetAll()">Tip someone else →</button>
+  </div>
+
+  <!-- SCREEN: WORKER DASHBOARD -->
+  <div class="screen" id="screen-dash">
+
+    <!-- Worker identity + check-in -->
+    <div class="card">
+      <div class="dash-header">
+        <div class="dash-avatar">MK</div>
+        <div>
+          <div class="dash-name">Marcus K.</div>
+          <div class="dash-role">Line Cook · Sakura Ramen</div>
+          <div class="dash-id">@marcus_k</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Check-in toggle -->
+    <div class="card">
+      <div class="checkin-toggle">
+        <div>
+          <div class="toggle-label"><span class="live-dot" id="live-dot"></span><span id="checkin-label">You're visible nearby</span></div>
+          <div class="toggle-sub" id="checkin-sub">Customers within 50m can find and tip you</div>
+        </div>
+        <div class="toggle on" id="checkin-toggle" onclick="toggleCheckin()">
+          <div class="toggle-knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stat-grid">
+      <div class="stat-card highlight">
+        <div class="stat-label">Today</div>
+        <div class="stat-value" id="stat-today">$34</div>
+        <div class="stat-trend">↑ 6 tips</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Week</div>
+        <div class="stat-value">$187</div>
+        <div class="stat-sub">Mon – today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">This Month</div>
+        <div class="stat-value">$612</div>
+        <div class="stat-sub">June so far</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">All Time</div>
+        <div class="stat-value">$2,841</div>
+        <div class="stat-sub">Since Jan</div>
+      </div>
+    </div>
+
+    <!-- 7-day bar chart -->
+    <div class="card">
+      <div class="card-label">Last 7 days</div>
+      <div class="bar-chart" id="bar-chart"></div>
+    </div>
+
+    <!-- Recent tip feed -->
+    <div class="card">
+      <div class="card-label">Recent tips</div>
+      <div class="tip-feed" id="tip-feed"></div>
+    </div>
+
+    <!-- Payout -->
+    <div class="card">
+      <div class="card-label">Payout method</div>
+      <div class="payout-row">
+        <div class="payout-connected">
+          <div class="payout-icon-lg">🏦</div>
+          <div class="payout-info">
+            <strong>Chase Bank</strong>
+            <span>••••4821 · Instant</span>
+          </div>
+        </div>
+        <button class="btn-sm-ghost" onclick="alert('Payout settings — coming soon!')">Change</button>
+      </div>
+      <div style="margin-top:14px;">
+        <button class="btn-sm" style="width:100%;padding:13px;" onclick="showCashout()">Cash out $34.00 →</button>
+      </div>
+      <div style="margin-top:10px;" class="help-text" style="text-align:center;">Instant transfer · $0 fee from DirectTip</div>
+    </div>
+
+    <!-- Connect more payout methods -->
+    <div class="card">
+      <div class="card-label">Also connected</div>
+      <div class="payout-grid">
+        <div class="payout-btn connected"><span class="payout-icon">🏦</span><span class="payout-name">Bank</span><span class="payout-status">✓ Primary</span></div>
+        <div class="payout-btn connected"><span class="payout-icon">💜</span><span class="payout-name">Venmo</span><span class="payout-status">✓ Linked</span></div>
+        <div class="payout-btn" onclick="togglePayout(this)"><span class="payout-icon">💚</span><span class="payout-name">Cash App</span><span class="payout-status">Tap to link</span></div>
+        <div class="payout-btn" onclick="togglePayout(this)"><span class="payout-icon">🔵</span><span class="payout-name">Zelle</span><span class="payout-status">Tap to link</span></div>
+        <div class="payout-btn" onclick="togglePayout(this)"><span class="payout-icon">🅿️</span><span class="payout-name">PayPal</span><span class="payout-status">Tap to link</span></div>
+        <div class="payout-btn" onclick="togglePayout(this)"><span class="payout-icon">🍎</span><span class="payout-name">Apple Pay</span><span class="payout-status">Tap to link</span></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const PROFILES = {
+  '@marcus_k': { name:'Marcus K.', role:'Line Cook · Sakura Ramen', initials:'MK', color:'#F59E3A', bg:'rgba(245,158,58,0.12)', lat:0.00018, lng:0.00012 },
+  '@priya_c':  { name:'Priya C.',  role:'Delivery Driver · DoorDash', initials:'PC', color:'#5CD6A2', bg:'rgba(92,214,162,0.12)', lat:0.00031, lng:-0.00008 },
+  '@james_d':  { name:'James D.',  role:'Barista · Corner Coffee', initials:'JD', color:'#8B8AE8', bg:'rgba(139,138,232,0.12)', lat:0.00044, lng:0.00025 },
+  '@sasha_m':  { name:'Sasha M.',  role:'Hair Stylist · Studio 12', initials:'SM', color:'#E87070', bg:'rgba(232,112,112,0.12)', lat:-0.00005, lng:0.00038 },
+};
+
+let currentProfile = null;
+let selectedAmount = 0;
+let userLat = null, userLng = null;
+let activeTab = 'nearby';
+let nearbySelected = null;
+
+// ── TAB SWITCH ──
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-nearby').classList.toggle('active', tab === 'nearby');
+  document.getElementById('tab-manual').classList.toggle('active', tab === 'manual');
+  document.getElementById('panel-nearby').style.display = tab === 'nearby' ? 'flex' : 'none';
+  document.getElementById('panel-nearby').style.flexDirection = 'column';
+  document.getElementById('panel-nearby').style.gap = '18px';
+  document.getElementById('panel-manual').style.display = tab === 'manual' ? 'flex' : 'none';
+  document.getElementById('panel-manual').style.flexDirection = 'column';
+  document.getElementById('panel-manual').style.gap = '18px';
+  document.getElementById('btn-next-1').disabled = true;
+  currentProfile = null;
+}
+
+// ── GPS ──
+function requestGPS() {
+  document.getElementById('gps-prompt').style.display = 'none';
+  document.getElementById('gps-scanning').style.display = 'block';
+  document.getElementById('gps-status-text').textContent = 'Getting your location...';
+  document.getElementById('gps-sub-text').textContent = 'Allow location access when prompted';
+
+  if (!navigator.geolocation) {
+    showGPSDenied(); return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      document.getElementById('gps-status-text').textContent = 'Scanning nearby...';
+      document.getElementById('gps-sub-text').textContent = 'Looking for workers within 50 meters';
+      setTimeout(finishScan, 2600);
+    },
+    (err) => {
+      // Demo fallback — simulate location for testing
+      userLat = 41.8900;
+      userLng = -87.6340;
+      document.getElementById('gps-status-text').textContent = 'Scanning nearby...';
+      document.getElementById('gps-sub-text').textContent = 'Demo mode — showing simulated nearby workers';
+      setTimeout(finishScan, 2600);
+    },
+    { timeout: 8000, maximumAge: 30000 }
+  );
+}
+
+function showGPSDenied() {
+  document.getElementById('gps-scanning').style.display = 'none';
+  document.getElementById('gps-denied').style.display = 'block';
+}
+
+function haversineMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function finishScan() {
+  radarDone = true;
+
+  // Compute distances — demo offsets are tiny so we simulate realistic distances
+  const nearby = Object.entries(PROFILES).map(([id, p]) => {
+    // Simulate realistic distances between 8m–48m for demo
+    const seed = id.charCodeAt(1) + id.charCodeAt(2);
+    const dist = 8 + (seed % 40);
+    return { id, ...p, dist };
+  }).filter(p => p.dist <= 50).sort((a,b) => a.dist - b.dist);
+
+  document.getElementById('gps-scanning').style.display = 'none';
+  document.getElementById('nearby-results').style.display = 'block';
+
+  const count = nearby.length;
+  document.getElementById('nearby-count').textContent = count + ' worker' + (count !== 1 ? 's' : '') + ' within 50m';
+
+  const list = document.getElementById('nearby-list');
+  list.innerHTML = '';
+
+  if (count === 0) {
+    list.innerHTML = '<div class="no-nearby">No workers found nearby.<br>Try the manual ID tab or ask them to check in on the app.</div>';
+    return;
+  }
+
+  nearby.forEach((p, i) => {
+    const distClass = p.dist <= 15 ? 'dist-close' : p.dist <= 35 ? 'dist-mid' : 'dist-far';
+    const distLabel = p.dist < 1 ? 'Right here' : Math.round(p.dist) + 'm away';
+    const card = document.createElement('div');
+    card.className = 'nearby-card';
+    card.innerHTML = `
+      <div class="avatar" style="background:${p.bg};color:${p.color};width:40px;height:40px;font-size:14px;">${p.initials}</div>
+      <div class="profile-info">
+        <div class="profile-name">${p.name}</div>
+        <div class="profile-role">${p.role}</div>
+      </div>
+      <div class="dist-badge ${distClass}">${distLabel}</div>
+    `;
+    card.onclick = () => selectNearby(p.id, card, distClass, distLabel);
+    list.appendChild(card);
+
+    // Stagger appearance
+    card.style.opacity = '0';
+    card.style.transform = 'translateX(-8px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateX(0)';
+    }, i * 120 + 80);
+  });
+}
+
+function selectNearby(id, cardEl, distClass, distLabel) {
+  document.querySelectorAll('.nearby-card').forEach(c => c.classList.remove('selected'));
+  cardEl.classList.add('selected');
+  const p = PROFILES[id];
+  nearbySelected = { id, ...p, distClass, distLabel };
+  currentProfile = { id, ...p };
+
+  const av = document.getElementById('nearby-sel-avatar');
+  av.textContent = p.initials;
+  av.style.background = p.bg;
+  av.style.color = p.color;
+  document.getElementById('nearby-sel-name').textContent = p.name;
+  document.getElementById('nearby-sel-role').textContent = p.role;
+  document.getElementById('nearby-selected-preview').style.display = 'block';
+  document.getElementById('btn-next-1').disabled = false;
+}
+
+function rescan() {
+  nearbySelected = null;
+  currentProfile = null;
+  document.getElementById('btn-next-1').disabled = true;
+  document.getElementById('nearby-results').style.display = 'none';
+  document.getElementById('nearby-selected-preview').style.display = 'none';
+  radarDone = false;
+  document.getElementById('gps-scanning').style.display = 'block';
+  document.getElementById('gps-status-text').textContent = 'Scanning nearby...';
+  document.getElementById('gps-sub-text').textContent = 'Looking for workers within 50 meters';
+  setTimeout(finishScan, 2200);
+}
+
+// ── MANUAL TAB ──
+function fillId(id) {
+  document.getElementById('tip-id-input').value = id;
+  lookupId(id);
+}
+
+document.getElementById('tip-id-input').addEventListener('input', function() {
+  const val = this.value.trim().toLowerCase();
+  if (val.length > 2) lookupId(val);
+  else {
+    document.getElementById('manual-profile-result').style.display = 'none';
+    document.getElementById('btn-next-1').disabled = true;
+    currentProfile = null;
+  }
+});
+
+function lookupId(val) {
+  const key = val.startsWith('@') ? val : '@' + val;
+  const p = PROFILES[key] || PROFILES[val];
+  const errEl = document.getElementById('id-error');
+  if (p) {
+    currentProfile = { ...p, id: key };
+    document.getElementById('manual-profile-result').style.display = 'block';
+    const av = document.getElementById('result-avatar');
+    av.textContent = p.initials; av.style.background = p.bg; av.style.color = p.color;
+    document.getElementById('result-name').textContent = p.name;
+    document.getElementById('result-role').textContent = p.role;
+    document.getElementById('btn-next-1').disabled = false;
+    errEl.classList.remove('show');
+  } else {
+    document.getElementById('manual-profile-result').style.display = 'none';
+    document.getElementById('btn-next-1').disabled = true;
+    errEl.classList.add('show');
+    currentProfile = null;
+  }
+}
+
+// ── FLOW ──
+function goToStep2() {
+  if (!currentProfile) return;
+  const p = currentProfile;
+  const s2av = document.getElementById('s2-avatar');
+  s2av.textContent = p.initials; s2av.style.background = p.bg; s2av.style.color = p.color;
+  document.getElementById('s2-name').textContent = p.name;
+  document.getElementById('s2-role').textContent = p.role;
+
+  const distBadge = document.getElementById('s2-dist-badge');
+  if (nearbySelected && nearbySelected.id === p.id) {
+    distBadge.style.display = 'block';
+    distBadge.className = 'dist-badge ' + nearbySelected.distClass;
+    distBadge.textContent = nearbySelected.distLabel;
+  } else {
+    distBadge.style.display = 'none';
+  }
+  showScreen(2);
+}
+
+function selectAmount(amt, btn) {
+  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedAmount = amt;
+  document.getElementById('custom-amount').value = '';
+  document.getElementById('btn-next-2').disabled = false;
+}
+
+function handleCustomAmount(input) {
+  const val = parseFloat(input.value);
+  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+  if (!isNaN(val) && val > 0) { selectedAmount = val; document.getElementById('btn-next-2').disabled = false; }
+  else { selectedAmount = 0; document.getElementById('btn-next-2').disabled = true; }
+}
+
+function goToStep3() {
+  if (!selectedAmount) return;
+  const p = currentProfile;
+  document.getElementById('s3-name').textContent = p.name;
+  document.getElementById('s3-first-name').textContent = p.name.split(' ')[0];
+  document.getElementById('s3-first-name2').textContent = p.name.split(' ')[0];
+  document.getElementById('s3-amount').textContent = '$' + selectedAmount.toFixed(2);
+  document.getElementById('s3-btn-amount').textContent = selectedAmount.toFixed(2);
+  document.getElementById('s3-words').textContent = amountToWords(selectedAmount);
+  const msg = document.getElementById('tip-message').value.trim();
+  if (msg) { document.getElementById('s3-msg-preview').style.display = 'block'; document.getElementById('s3-msg-text').textContent = '"' + msg + '"'; }
+  else { document.getElementById('s3-msg-preview').style.display = 'none'; }
+  showScreen(3);
+}
+
+function sendTip() {
+  document.getElementById('proc-name').textContent = currentProfile.name;
+  showScreen(4);
+  setTimeout(() => {
+    const p = currentProfile;
+    document.getElementById('suc-name').textContent = p.name;
+    document.getElementById('rec-name').textContent = p.name;
+    document.getElementById('rec-role').textContent = p.role;
+    document.getElementById('rec-amount').textContent = '$' + selectedAmount.toFixed(2);
+    const msg = document.getElementById('tip-message').value.trim();
+    if (msg) { document.getElementById('rec-msg-row').style.display = 'flex'; document.getElementById('rec-msg').textContent = msg; }
+    document.getElementById('conf-code').textContent = 'Confirmation: DT-' + Math.random().toString(36).substr(2,8).toUpperCase();
+    showScreen(5);
+  }, 2200);
+}
+
+function goBack(fromScreen) {
+  showScreen(fromScreen - 1);
+  if (fromScreen === 2) { selectedAmount = 0; document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected')); document.getElementById('custom-amount').value = ''; document.getElementById('btn-next-2').disabled = true; }
+}
+
+function resetAll() {
+  currentProfile = null; selectedAmount = 0; nearbySelected = null;
+  document.getElementById('tip-id-input').value = '';
+  document.getElementById('manual-profile-result').style.display = 'none';
+  document.getElementById('id-error').classList.remove('show');
+  document.getElementById('btn-next-1').disabled = true;
+  document.getElementById('tip-message').value = '';
+  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('custom-amount').value = '';
+  document.getElementById('rec-msg-row').style.display = 'none';
+  // Reset GPS panel
+  document.getElementById('gps-prompt').style.display = 'block';
+  document.getElementById('gps-scanning').style.display = 'none';
+  document.getElementById('nearby-results').style.display = 'none';
+  document.getElementById('nearby-selected-preview').style.display = 'none';
+  radarDone = false;
+  showScreen(1);
+}
+
+function showScreen(n) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + n).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function amountToWords(amt) {
+  if (amt <= 1) return 'A small gesture of appreciation';
+  if (amt <= 3) return 'A kind thank-you';
+  if (amt <= 7) return "A solid tip — they'll appreciate it";
+  if (amt <= 15) return 'A generous tip — nice work!';
+  if (amt <= 30) return 'Wow, very generous!';
+  return "An extraordinary tip — you're amazing!";
+}
+
+// ── AUTH STATE ──
+let currentUser = null;
+let selectedRole = null;
+
+function showAuth(screen) {
+  document.getElementById('auth-splash').style.display = 'none';
+  document.getElementById('auth-login').style.display = 'none';
+  if (screen === 'splash') {
+    document.getElementById('auth-splash').style.display = 'flex';
+    document.getElementById('auth-splash').style.flexDirection = 'column';
+    document.getElementById('auth-splash').style.gap = '14px';
+  } else if (screen === 'login') {
+    document.getElementById('auth-login').style.display = 'flex';
+    document.getElementById('auth-login').style.flexDirection = 'column';
+    document.getElementById('auth-login').style.gap = '14px';
+  }
+}
+
+function authTab(tab) {
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  document.getElementById('login-form').style.display = tab === 'login' ? 'flex' : 'none';
+  if (tab === 'login') document.getElementById('login-form').style.flexDirection = 'column';
+  if (tab === 'login') document.getElementById('login-form').style.gap = '14px';
+  document.getElementById('signup-form').style.display = tab === 'signup' ? 'flex' : 'none';
+  if (tab === 'signup') document.getElementById('signup-form').style.flexDirection = 'column';
+  if (tab === 'signup') document.getElementById('signup-form').style.gap = '14px';
+}
+
+function selectRole(role) {
+  selectedRole = role;
+  document.getElementById('role-worker').classList.toggle('selected', role === 'worker');
+  document.getElementById('role-tipper').classList.toggle('selected', role === 'tipper');
+  document.getElementById('signup-role-field').style.display = role === 'worker' ? 'flex' : 'none';
+  if (role === 'worker') document.getElementById('signup-role-field').style.flexDirection = 'column';
+  if (role === 'worker') document.getElementById('signup-role-field').style.gap = '7px';
+}
+
+function checkStrength(val) {
+  const fill = document.getElementById('strength-fill');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#E05555','#E8A020','#E8A020','#3DBA7A'];
+  const widths = ['25%','50%','75%','100%'];
+  fill.style.width = score ? widths[score-1] : '0%';
+  fill.style.background = score ? colors[score-1] : '';
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const err = document.getElementById('login-error');
+  if (!email || !pass) { err.textContent = 'Please enter your email and password.'; err.classList.add('show'); return; }
+  err.classList.remove('show');
+  // Demo: accept any email/pass
+  currentUser = { name: 'Marcus K.', role: 'Line Cook · Sakura Ramen', id: '@marcus_k', type: 'worker', initials: 'MK', color: '#F59E3A', bg: 'rgba(245,158,58,0.12)' };
+  enterApp();
+}
+
+function doSignup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const pass = document.getElementById('signup-password').value;
+  const err = document.getElementById('signup-error');
+  if (!selectedRole) { err.textContent = 'Please select Worker or Tipper.'; err.classList.add('show'); return; }
+  if (!name) { err.textContent = 'Please enter your name.'; err.classList.add('show'); return; }
+  if (!email) { err.textContent = 'Please enter your email.'; err.classList.add('show'); return; }
+  if (pass.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.classList.add('show'); return; }
+  err.classList.remove('show');
+  const roleText = selectedRole === 'worker' ? (document.getElementById('signup-role').value || 'Worker') : 'Tipper';
+  const initials = name.split(' ').map(w => w[0]).join('').substr(0,2).toUpperCase();
+  const colors = ['#F59E3A','#5CD6A2','#8B8AE8','#E87070'];
+  const bgs = ['rgba(245,158,58,0.12)','rgba(92,214,162,0.12)','rgba(139,138,232,0.12)','rgba(232,112,112,0.12)'];
+  const ci = Math.floor(Math.random()*4);
+  const handle = '@' + name.toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'') + '_' + Math.floor(Math.random()*100);
+  currentUser = { name, role: roleText, id: handle, type: selectedRole, initials, color: colors[ci], bg: bgs[ci] };
+  enterApp();
+}
+
+function socialLogin(provider) {
+  currentUser = { name: 'Marcus K.', role: 'Line Cook · Sakura Ramen', id: '@marcus_k', type: 'worker', initials: 'MK', color: '#F59E3A', bg: 'rgba(245,158,58,0.12)' };
+  enterApp();
+}
+
+function continueAsGuest() {
+  currentUser = { name: 'Guest', role: 'Tipper', id: '', type: 'tipper', initials: '?', color: '#9A8E78', bg: 'rgba(154,142,120,0.1)' };
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('auth-wrap').style.display = 'none';
+  document.getElementById('main-app').style.display = 'contents';
+  // populate account screen
+  const u = currentUser;
+  document.getElementById('acct-avatar').textContent = u.initials;
+  document.getElementById('acct-avatar').style.background = u.bg;
+  document.getElementById('acct-avatar').style.color = u.color;
+  document.getElementById('acct-name').textContent = u.name;
+  document.getElementById('acct-role').textContent = u.role;
+  document.getElementById('acct-id').textContent = u.id || 'Guest';
+  // hide dash nav if tipper/guest
+  if (u.type !== 'worker') {
+    document.getElementById('nav-dash').style.display = 'none';
+  }
+  // show header
+  document.querySelector('header').style.display = 'flex';
+}
+
+function doLogout() {
+  currentUser = null;
+  selectedRole = null;
+  document.getElementById('main-app').style.display = 'none';
+  document.getElementById('auth-wrap').style.display = 'block';
+  showAuth('splash');
+  document.querySelector('header').style.display = 'none';
+}
+
+// extend switchView to handle account tab
+const _origSwitchView = switchView;
+window.switchView = function(view) {
+  document.getElementById('nav-tip').classList.toggle('active', view === 'tip');
+  document.getElementById('nav-dash').classList.toggle('active', view === 'dash');
+  document.getElementById('nav-account').classList.toggle('active', view === 'account');
+  if (view === 'account') {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-account').classList.add('active');
+    document.getElementById('header-tagline').style.display = 'none';
+    document.getElementById('header-status').textContent = '';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    _origSwitchView(view);
+  }
+};
+
+// ── PWA INSTALL PROMPT ──
+// Show iOS install hint if in Safari and not already installed
+window.addEventListener('load', () => {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone;
+  const isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+  if (isIOS && !isStandalone && isSafari) {
+    document.getElementById('pwa-banner').style.display = 'flex';
+  }
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+});
+
+// Init auth - hide main app and header until logged in
+document.getElementById('main-app').style.display = 'none';
+document.querySelector('header').style.display = 'none';
+showAuth('splash');
+
+// Init — show nearby tab panels correctly
+document.getElementById('panel-nearby').style.display = 'flex';
+// Init — show nearby tab panels correctly
+document.getElementById('panel-nearby').style.display = 'flex';
+document.getElementById('panel-nearby').style.flexDirection = 'column';
+document.getElementById('panel-nearby').style.gap = '18px';
+document.getElementById('panel-manual').style.display = 'none';
+
+// ── VIEW SWITCHER ──
+let currentView = 'tip';
+let lastTipScreen = 'screen-1';
+
+function switchView(view) {
+  currentView = view;
+  document.getElementById('nav-tip').classList.toggle('active', view === 'tip');
+  document.getElementById('nav-dash').classList.toggle('active', view === 'dash');
+
+  if (view === 'tip') {
+    document.getElementById('header-tagline').style.display = '';
+    document.getElementById('header-status').textContent = '';
+    // restore last tip screen
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(lastTipScreen).classList.add('active');
+  } else {
+    document.getElementById('header-tagline').style.display = 'none';
+    document.getElementById('header-status').innerHTML = '<span class="live-dot"></span> Live';
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-dash').classList.add('active');
+    initDashboard();
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// track which tip screen we're on
+const origShowScreen = showScreen;
+window.showScreen = function(n) {
+  if (currentView === 'tip') lastTipScreen = 'screen-' + n;
+  origShowScreen(n);
+}
+
+// ── DASHBOARD INIT ──
+let dashInited = false;
+function initDashboard() {
+  if (dashInited) return;
+  dashInited = true;
+  buildBarChart();
+  buildFeed();
+}
+
+const BAR_DATA = [
+  { day: 'Mon', amt: 22 },
+  { day: 'Tue', amt: 41 },
+  { day: 'Wed', amt: 18 },
+  { day: 'Thu', amt: 55 },
+  { day: 'Fri', amt: 38 },
+  { day: 'Sat', amt: 29 },
+  { day: 'Sun', amt: 34, today: true },
+];
+
+function buildBarChart() {
+  const max = Math.max(...BAR_DATA.map(d => d.amt));
+  const container = document.getElementById('bar-chart');
+  container.innerHTML = '';
+  BAR_DATA.forEach(d => {
+    const col = document.createElement('div');
+    col.className = 'bar-col';
+    const pct = Math.round((d.amt / max) * 72);
+    col.innerHTML = `<div class="bar${d.today ? ' today' : ''}" style="height:4px" data-h="${pct}"></div><div class="bar-day">${d.day}</div>`;
+    container.appendChild(col);
+  });
+  // animate in
+  setTimeout(() => {
+    document.querySelectorAll('.bar[data-h]').forEach(b => {
+      b.style.height = b.dataset.h + 'px';
+    });
+  }, 80);
+}
+
+const FEED_DATA = [
+  { initials:'AJ', color:'#8B8AE8', bg:'rgba(139,138,232,0.12)', name:'Alex J.', msg:'Great ramen, seriously the best!', amt:10, time:'2m ago' },
+  { initials:'SR', color:'#5CD6A2', bg:'rgba(92,214,162,0.12)', name:'Someone nearby', msg:'', amt:5, time:'18m ago' },
+  { initials:'TK', color:'#F59E3A', bg:'rgba(245,158,58,0.12)', name:'Taylor K.', msg:'You made my lunch break 🙌', amt:3, time:'41m ago' },
+  { initials:'??', color:'#9A8E78', bg:'rgba(154,142,120,0.1)', name:'Anonymous', msg:'', amt:2, time:'1h ago' },
+  { initials:'ML', color:'#E87070', bg:'rgba(232,112,112,0.12)', name:'Morgan L.', msg:'The broth was incredible', amt:15, time:'2h ago' },
+  { initials:'SR', color:'#5CD6A2', bg:'rgba(92,214,162,0.12)', name:'Someone nearby', msg:'', amt:1, time:'3h ago' },
+];
+
+function buildFeed() {
+  const feed = document.getElementById('tip-feed');
+  feed.innerHTML = '';
+  FEED_DATA.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'feed-item';
+    el.innerHTML = `
+      <div class="feed-avatar" style="background:${t.bg};color:${t.color}">${t.initials}</div>
+      <div class="feed-info">
+        <div class="feed-name">${t.name}</div>
+        ${t.msg ? `<div class="feed-msg">"${t.msg}"</div>` : '<div class="feed-time">' + t.time + '</div>'}
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div class="feed-amount">+$${t.amt}</div>
+        ${t.msg ? `<div class="feed-time">${t.time}</div>` : ''}
+      </div>
+    `;
+    feed.appendChild(el);
+  });
+}
+
+// ── CHECK-IN TOGGLE ──
+let checkedIn = true;
+function toggleCheckin() {
+  checkedIn = !checkedIn;
+  const tog = document.getElementById('checkin-toggle');
+  const dot = document.getElementById('live-dot');
+  const label = document.getElementById('checkin-label');
+  const sub = document.getElementById('checkin-sub');
+  if (checkedIn) {
+    tog.classList.add('on');
+    dot.className = 'live-dot';
+    label.textContent = "You're visible nearby";
+    sub.textContent = 'Customers within 50m can find and tip you';
+  } else {
+    tog.classList.remove('on');
+    dot.className = 'offline-dot';
+    label.textContent = 'You are hidden';
+    sub.textContent = 'Tap to go live and start receiving tips';
+  }
+}
+
+// ── CASHOUT ──
+function showCashout() {
+  const btn = event.target;
+  btn.textContent = 'Sending to Chase ••••4821...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = '✓ $34.00 sent to your bank!';
+    btn.style.background = 'var(--green)';
+    document.getElementById('stat-today').textContent = '$0';
+  }, 1800);
+}
+</script>
+
+  <!-- SCREEN: ACCOUNT -->
+  <div class="screen" id="screen-account">
+    <div class="card" style="text-align:center;padding:28px 24px 22px;">
+      <div class="account-avatar-lg" id="acct-avatar" style="background:rgba(245,158,58,0.12);color:#F59E3A;">MK</div>
+      <div class="account-name-lg" id="acct-name">Marcus K.</div>
+      <div class="account-role-lg" id="acct-role">Line Cook · Sakura Ramen</div>
+      <div class="account-id-lg" id="acct-id">@marcus_k</div>
+    </div>
+    <div class="card">
+      <div class="account-menu">
+        <div class="account-row" onclick="alert('Edit profile — coming soon!')">
+          <div class="account-row-icon">✏️</div>
+          <div class="account-row-info"><div class="account-row-label">Edit profile</div><div class="account-row-sub">Name, role, photo</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+        <div class="account-row" onclick="alert('Payout settings — coming soon!')">
+          <div class="account-row-icon">🏦</div>
+          <div class="account-row-info"><div class="account-row-label">Payout methods</div><div class="account-row-sub">Bank, Venmo, Cash App</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+        <div class="account-row" onclick="alert('Your QR code — coming soon!')">
+          <div class="account-row-icon">⬛</div>
+          <div class="account-row-info"><div class="account-row-label">My QR code</div><div class="account-row-sub">Share with customers</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+        <div class="account-row" onclick="alert('Notification settings — coming soon!')">
+          <div class="account-row-icon">🔔</div>
+          <div class="account-row-info"><div class="account-row-label">Notifications</div><div class="account-row-sub">Tip alerts, payouts</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+        <div class="account-row" onclick="alert('Privacy settings — coming soon!')">
+          <div class="account-row-icon">🔒</div>
+          <div class="account-row-info"><div class="account-row-label">Privacy & location</div><div class="account-row-sub">Control who sees you</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="account-menu">
+        <div class="account-row" onclick="alert('Help center — coming soon!')">
+          <div class="account-row-icon">❓</div>
+          <div class="account-row-info"><div class="account-row-label">Help & support</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+        <div class="account-row" onclick="doLogout()">
+          <div class="account-row-icon">🚪</div>
+          <div class="account-row-info"><div class="account-row-label" style="color:var(--red);">Log out</div></div>
+          <div class="account-row-arrow">›</div>
+        </div>
+      </div>
+    </div>
+    <div class="help-text" style="text-align:center;">DirectTip v1.0 · Made by ConCorp · 100% free forever</div>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-tip" onclick="switchView('tip')">
+    <svg viewBox="0 0 24 24"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+    Tip
+    <div class="nav-indicator"></div>
+  </button>
+  <button class="nav-btn" id="nav-dash" onclick="switchView('dash')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    My Earnings
+    <div class="nav-indicator"></div>
+  </button>
+  <button class="nav-btn" id="nav-account" onclick="switchView('account')">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+    Account
+    <div class="nav-indicator"></div>
+  </button>
+</nav>
+
+<!-- AD BAR -->
+<div class="ad-bar">
+  <div class="ad-label">Advertisement — keeps DirectTip free</div>
+  <div class="ad-slot" id="ad-slot">
+    <div class="ad-slide visible" id="ad-0">
+      <div class="ad-icon">🍕</div>
+      <div class="ad-copy"><strong>Slice House — Order Now</strong><span>Fresh NYC-style pizza, 30 min delivery</span></div>
+      <div class="ad-cta">Order →</div>
+    </div>
+    <div class="ad-slide" id="ad-1">
+      <div class="ad-icon">☕</div>
+      <div class="ad-copy"><strong>Brew & Co. Coffee</strong><span>Buy 2 drinks, get 1 free this week</span></div>
+      <div class="ad-cta">Claim →</div>
+    </div>
+    <div class="ad-slide" id="ad-2">
+      <div class="ad-icon">💳</div>
+      <div class="ad-copy"><strong>Capital One — No fees</strong><span>Earn cash back on every purchase</span></div>
+      <div class="ad-cta">Apply →</div>
+    </div>
+    <div class="ad-slide" id="ad-3">
+      <div class="ad-icon">🚗</div>
+      <div class="ad-copy"><strong>Uber Eats — $5 off</strong><span>Use code DIRECT5 on your next order</span></div>
+      <div class="ad-cta">Save →</div>
+    </div>
+  </div>
+  <div class="ad-free-note">Ads keep tips 100% free for workers &amp; tippers</div>
+
+
+</body>
+</html>
