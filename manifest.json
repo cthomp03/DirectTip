@@ -2,7 +2,7 @@
   "name": "DirectTip",
   "short_name": "DirectTip",
   "description": "Tip workers directly — 100% free, no platform cut",
-  "start_url": "/directtip.html",
+  "start_url": "/directtip/directtip.html",
   "display": "standalone",
   "background_color": "#0F0D0A",
   "theme_color": "#0F0D0A",
