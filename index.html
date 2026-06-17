@@ -23,60 +23,60 @@
     --radius: 16px; --radius-sm: 10px;
   }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 0 80px; -webkit-tap-highlight-color: transparent; }
-
-  header { width: 100%; max-width: 480px; padding: 28px 24px 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+ 
+  header { width: 100%; max-width: 480px; padding: max(44px, calc(env(safe-area-inset-top) + 18px)) 24px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--gold); }
   .logo span { color: var(--text); }
   .tagline { font-size: 13px; color: var(--text-muted); letter-spacing: 0.4px; }
-
+ 
   .screens { width: 100%; max-width: 480px; padding: 24px max(20px, env(safe-area-inset-left)) 0; }
   .screen { display: none; flex-direction: column; gap: 18px; animation: fadeUp 0.3s ease; }
   .screen.active { display: flex; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
+ 
   .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; }
   .card-label { font-size: 11px; font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
-
+ 
   .steps { display: flex; align-items: center; margin-bottom: 2px; }
   .step-dot { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-dim); font-family: 'Syne', sans-serif; transition: all 0.25s; background: var(--bg3); flex-shrink: 0; }
   .step-dot.done { background: var(--gold); border-color: var(--gold); color: var(--bg); }
   .step-dot.active { border-color: var(--gold); color: var(--gold); background: rgba(232,160,32,0.08); }
   .step-line { flex: 1; height: 1.5px; background: var(--border); transition: background 0.25s; }
   .step-line.done { background: var(--gold); }
-
+ 
   .field { display: flex; flex-direction: column; gap: 8px; }
   .field label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
   input[type="text"] { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; border-radius: var(--radius-sm); }
   input[type="text"]:focus { border-color: var(--gold); }
   input[type="text"]::placeholder { color: var(--text-dim); }
-
+ 
   .profile-preview { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
   .avatar { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; flex-shrink: 0; }
   .profile-info { flex: 1; min-width: 0; }
   .profile-name { font-size: 15px; font-weight: 500; color: var(--text); font-family: 'Syne', sans-serif; }
   .profile-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
+ 
   .amount-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
   .amount-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; padding: 15px 10px; cursor: pointer; transition: all 0.15s; text-align: center; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   .amount-btn .sub { display: block; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 400; color: var(--text-muted); margin-top: 3px; }
   .amount-btn:hover { border-color: var(--gold); background: rgba(232,160,32,0.06); }
   .amount-btn.selected { border-color: var(--gold); background: rgba(232,160,32,0.1); color: var(--gold); }
   .amount-btn.selected .sub { color: var(--gold-dark); }
-
+ 
   .custom-amount-wrap { position: relative; margin-top: 4px; }
   .custom-amount-wrap span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 17px; color: var(--text-muted); font-weight: 500; pointer-events: none; }
   .custom-amount-wrap input { padding-left: 30px; font-size: 18px; font-weight: 600; font-family: 'Syne', sans-serif; }
-
+ 
   .tip-summary { background: rgba(232,160,32,0.06); border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 26px 24px; text-align: center; }
   .tip-to { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
   .tip-recipient-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 20px; }
   .tip-amount-display { font-family: 'Syne', sans-serif; font-size: 52px; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 6px; }
   .tip-amount-words { font-size: 13px; color: var(--text-muted); }
-
+ 
   textarea { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px; outline: none; resize: none; width: 100%; line-height: 1.6; transition: border-color 0.2s; -webkit-appearance: none; }
   textarea:focus { border-color: var(--gold); }
   textarea::placeholder { color: var(--text-dim); }
-
+ 
   .btn-primary { background: var(--gold); color: var(--bg); border: none; border-radius: var(--radius-sm); font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; padding: 15px 24px; cursor: pointer; width: 100%; transition: all 0.15s; letter-spacing: 0.3px; min-height: 50px; touch-action: manipulation; }
   .btn-primary:hover { background: var(--gold-dark); transform: translateY(-1px); }
   .btn-primary:active { transform: translateY(0); }
@@ -86,16 +86,16 @@
   .btn-row { display: flex; gap: 10px; }
   .btn-row .btn-ghost { flex: 0 0 auto; }
   .btn-row .btn-primary { flex: 1; }
-
+ 
   .error-msg { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.3); border-radius: var(--radius-sm); color: #F09595; font-size: 13px; padding: 10px 14px; display: none; }
   .error-msg.show { display: block; }
-
+ 
   .online-badge { display: inline-flex; align-items: center; gap: 5px; background: var(--green-bg); color: var(--green); font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.3px; flex-shrink: 0; }
   .online-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
+ 
   .help-text { font-size: 12px; color: var(--text-dim); line-height: 1.6; }
-
+ 
   /* ── GPS / RADAR SCREEN ── */
   .gps-screen { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 6px 0 4px; }
   .radar-wrap { position: relative; width: 200px; height: 200px; margin: 0 auto; flex-shrink: 0; }
@@ -105,37 +105,37 @@
   .gps-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; text-align: center; max-width: 260px; }
   .gps-range-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,160,32,0.08); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
   .gps-range-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); }
-
+ 
   /* ── NEARBY LIST ── */
   .nearby-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   .nearby-count { font-size: 13px; color: var(--text-muted); }
   .nearby-refresh { font-size: 12px; color: var(--gold); cursor: pointer; background: none; border: none; font-family: 'DM Sans', sans-serif; padding: 0; }
   .nearby-refresh:hover { color: var(--gold-dark); }
-
+ 
   .nearby-list { display: flex; flex-direction: column; gap: 10px; }
-
+ 
   .nearby-card { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; touch-action: manipulation; min-height: 64px; }
   .nearby-card:hover { border-color: var(--gold); background: rgba(232,160,32,0.04); transform: translateX(2px); }
   .nearby-card.selected { border-color: var(--gold); background: rgba(232,160,32,0.08); }
-
+ 
   .dist-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 12px; white-space: nowrap; flex-shrink: 0; }
   .dist-close { background: var(--green-bg); color: var(--green); }
   .dist-mid { background: rgba(232,160,32,0.1); color: var(--gold); }
   .dist-far { background: rgba(255,255,255,0.05); color: var(--text-dim); }
-
+ 
   .no-nearby { text-align: center; padding: 32px 20px; color: var(--text-dim); font-size: 14px; line-height: 1.7; }
-
+ 
   /* ── TAB TOGGLE ── */
   .search-tabs { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 3px; gap: 3px; }
   .tab-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--text-muted); }
   .tab-btn.active { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
-
+ 
   /* ── PROCESSING / SUCCESS ── */
   .processing { display: none; flex-direction: column; align-items: center; gap: 16px; padding: 32px; text-align: center; }
   .processing.show { display: flex; }
   .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
-
+ 
   .success-screen { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 16px 0; }
   .success-icon { width: 80px; height: 80px; border-radius: 50%; background: var(--green-bg); border: 2px solid rgba(61,186,122,0.35); display: flex; align-items: center; justify-content: center; animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
   @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -143,7 +143,7 @@
   @keyframes draw { to { stroke-dashoffset: 0; } }
   .success-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: var(--text); }
   .success-sub { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 300px; }
-
+ 
   .success-receipt { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; width: 100%; display: flex; flex-direction: column; gap: 12px; }
   .receipt-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
   .receipt-row .rk { color: var(--text-muted); }
@@ -151,38 +151,36 @@
   .receipt-row .rv.amount { color: var(--gold); font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; }
   .receipt-divider { height: 1px; background: var(--border); }
   .conf-code { font-size: 13px; letter-spacing: 2px; color: var(--text-dim); text-align: center; margin-top: 4px; }
-
+ 
   /* ── AD BANNER (fixed bottom) ── */
   .ad-bar {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--bg2);
     border-top: 1px solid var(--border);
     z-index: 100;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 6px 16px calc(8px + env(safe-area-inset-bottom));
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 12px;
+    height: 36px;
   }
-  .ad-label { font-size: 9px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; text-align: center; }
+  .ad-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-right: 8px; white-space: nowrap; flex-shrink: 0; }
   .ad-slot {
-    width: 100%; max-width: 480px; height: 52px;
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: 8px; overflow: hidden; position: relative;
+    flex: 1; max-width: 480px; height: 28px;
+    background: transparent;
+    overflow: hidden; position: relative;
     display: flex; align-items: center;
   }
-  .ad-slide { position: absolute; inset: 0; display: flex; align-items: center; padding: 0 14px; gap: 12px; opacity: 0; transition: opacity 0.5s; }
+  .ad-slide { position: absolute; inset: 0; display: flex; align-items: center; gap: 8px; opacity: 0; transition: opacity 0.5s; }
   .ad-slide.visible { opacity: 1; }
-  .ad-icon { font-size: 22px; flex-shrink: 0; }
-  .ad-copy { flex: 1; min-width: 0; }
-  .ad-copy strong { display: block; font-size: 12px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; }
-  .ad-copy span { font-size: 11px; color: var(--text-muted); }
+  .ad-icon { font-size: 15px; flex-shrink: 0; }
+  .ad-copy { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; }
+  .ad-copy strong { font-size: 11px; font-weight: 600; color: var(--text-muted); font-family: 'DM Sans', sans-serif; white-space: nowrap; }
+  .ad-copy span { font-size: 11px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .ad-cta { font-size: 11px; font-weight: 600; color: var(--gold); white-space: nowrap; flex-shrink: 0; }
-  .ad-free-note { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 3px; }
-
-  /* body needs bottom padding for ad bar */
-  body { padding-bottom: 90px !important; }
-
+  .ad-free-note { display: none; }
+ 
   /* ── FREE BADGE ── */
   .free-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(61,186,122,0.1); border: 1px solid rgba(61,186,122,0.25); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; color: var(--green); letter-spacing: 0.3px; }
-
+ 
   /* ── PAYOUT CONNECTIONS ── */
   .payout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 4px; }
   .payout-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 10px 6px; text-align: center; cursor: pointer; transition: all 0.15s; }
@@ -192,7 +190,7 @@
   .payout-name { font-size: 11px; font-weight: 600; color: var(--text-muted); display: block; }
   .payout-status { font-size: 10px; color: var(--text-dim); display: block; margin-top: 2px; }
   .payout-btn.connected .payout-status { color: var(--green); }
-
+ 
   /* ── WHY FREE section ── */
   .why-free { background: rgba(61,186,122,0.05); border: 1px solid rgba(61,186,122,0.15); border-radius: var(--radius); padding: 18px 20px; }
   .why-free-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
@@ -201,24 +199,26 @@
   .why-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
   .why-text { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
   .why-text strong { color: var(--text); font-weight: 500; }
-
+ 
   /* GPS denied banner */
   .gps-denied { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.3); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
   .gps-denied-title { font-size: 14px; font-weight: 600; color: #F09595; }
   .gps-denied-body { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
-
+ 
   /* manual ID tab */
   .demo-profiles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
   .demo-chip { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
   .demo-chip:hover { border-color: var(--gold); color: var(--text); }
   .demo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-
+ 
   /* ── BOTTOM NAV ── */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
     background: var(--bg2); border-top: 1px solid var(--border);
     display: flex; align-items: stretch;
     padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
   }
   .nav-btn {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -232,18 +232,18 @@
   .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .nav-indicator { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity 0.2s; margin-top: 1px; }
   .nav-btn.active .nav-indicator { opacity: 1; }
-
-  /* ad bar moves up when nav is shown */
-  .ad-bar { bottom: 56px !important; bottom: calc(56px + env(safe-area-inset-bottom)) !important; }
-  body { padding-bottom: 130px !important; }
-
+ 
+  /* ad bar sits just above the bottom nav */
+  .ad-bar { bottom: calc(56px + env(safe-area-inset-bottom)) !important; z-index: 150; }
+  body { padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important; }
+ 
   /* ── DASHBOARD ── */
   .dash-header { display: flex; align-items: center; gap: 14px; margin-bottom: 2px; }
   .dash-avatar { width: 52px; height: 52px; border-radius: 50%; background: rgba(245,158,58,0.12); color: #F59E3A; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; flex-shrink: 0; }
   .dash-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); }
   .dash-role { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .dash-id { font-size: 11px; color: var(--gold); margin-top: 3px; letter-spacing: 0.5px; }
-
+ 
   .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .stat-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; }
   .stat-card.highlight { background: rgba(232,160,32,0.07); border-color: var(--border-strong); }
@@ -252,14 +252,14 @@
   .stat-card.highlight .stat-value { color: var(--gold); }
   .stat-sub { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
   .stat-trend { font-size: 11px; color: var(--green); margin-top: 4px; }
-
+ 
   /* bar chart */
   .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; padding: 0 2px; }
   .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .bar { width: 100%; border-radius: 4px 4px 0 0; background: var(--border); transition: height 0.6s cubic-bezier(0.34,1.2,0.64,1); min-height: 4px; }
   .bar.today { background: var(--gold); }
   .bar-day { font-size: 10px; color: var(--text-dim); }
-
+ 
   /* tip feed */
   .tip-feed { display: flex; flex-direction: column; gap: 0; }
   .feed-item { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
@@ -270,7 +270,7 @@
   .feed-msg { font-size: 12px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
   .feed-time { font-size: 11px; color: var(--text-dim); }
   .feed-amount { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: var(--green); flex-shrink: 0; }
-
+ 
   /* payout section */
   .payout-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .payout-connected { display: flex; align-items: center; gap: 10px; }
@@ -279,7 +279,7 @@
   .payout-info span { font-size: 12px; color: var(--text-muted); }
   .btn-sm { background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; padding: 9px 16px; cursor: pointer; touch-action: manipulation; white-space: nowrap; }
   .btn-sm-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; padding: 8px 14px; cursor: pointer; touch-action: manipulation; }
-
+ 
   .checkin-toggle { display: flex; align-items: center; justify-content: space-between; }
   .toggle-wrap { display: flex; align-items: center; gap: 10px; }
   .toggle { width: 44px; height: 26px; background: var(--bg3); border: 1px solid var(--border); border-radius: 13px; position: relative; cursor: pointer; transition: background 0.2s; touch-action: manipulation; flex-shrink: 0; }
@@ -288,11 +288,11 @@
   .toggle.on .toggle-knob { left: 21px; background: white; }
   .toggle-label { font-size: 14px; color: var(--text); font-weight: 500; }
   .toggle-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-
+ 
   .live-dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; margin-right: 5px; }
   .offline-dot { width: 8px; height: 8px; background: var(--text-dim); border-radius: 50%; display: inline-block; margin-right: 5px; }
-
-
+ 
+ 
   /* ── AUTH SCREENS ── */
   .auth-wrap { width: 100%; max-width: 480px; padding: 20px 20px 0; display: flex; flex-direction: column; gap: 18px; animation: fadeUp 0.3s ease; }
   .auth-hero { text-align: center; padding: 20px 0 10px; }
@@ -301,18 +301,18 @@
   .auth-tagline { font-size: 14px; color: var(--text-muted); margin-top: 6px; line-height: 1.6; }
   .auth-pills { display: flex; justify-content: center; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
   .auth-pill { background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--text-muted); }
-
+ 
   .auth-tabs { display: flex; background: var(--bg3); border-radius: var(--radius-sm); padding: 3px; gap: 3px; }
   .auth-tab { flex: 1; padding: 9px; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.15s; background: transparent; color: var(--text-muted); touch-action: manipulation; }
   .auth-tab.active { background: var(--bg2); color: var(--text); border: 1px solid var(--border); }
-
+ 
   .auth-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; gap: 14px; }
   .auth-field { display: flex; flex-direction: column; gap: 7px; }
   .auth-field label { font-size: 13px; color: var(--text-muted); font-weight: 500; }
   .auth-input { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px; outline: none; transition: border-color 0.2s; width: 100%; -webkit-appearance: none; }
   .auth-input:focus { border-color: var(--gold); }
   .auth-input::placeholder { color: var(--text-dim); }
-
+ 
   .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .role-btn { background: var(--bg3); border: 1.5px solid var(--border); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; cursor: pointer; transition: all 0.15s; touch-action: manipulation; }
   .role-btn:hover { border-color: var(--border-strong); }
@@ -321,23 +321,23 @@
   .role-name { font-size: 13px; font-weight: 600; color: var(--text); font-family: 'Syne', sans-serif; display: block; }
   .role-desc { font-size: 11px; color: var(--text-muted); display: block; margin-top: 2px; }
   .role-btn.selected .role-name { color: var(--gold); }
-
+ 
   .auth-divider { display: flex; align-items: center; gap: 10px; }
   .auth-divider-line { flex: 1; height: 1px; background: var(--border); }
   .auth-divider span { font-size: 12px; color: var(--text-dim); }
-
+ 
   .btn-social { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 13px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.15s; touch-action: manipulation; min-height: 50px; }
   .btn-social:hover { border-color: var(--border-strong); }
-
+ 
   .auth-terms { font-size: 11px; color: var(--text-dim); text-align: center; line-height: 1.6; }
   .auth-terms a { color: var(--gold); text-decoration: none; }
-
+ 
   .auth-error { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.3); border-radius: var(--radius-sm); color: #F09595; font-size: 13px; padding: 10px 14px; display: none; }
   .auth-error.show { display: block; }
-
+ 
   .strength-bar { height: 3px; border-radius: 2px; background: var(--bg3); margin-top: 6px; overflow: hidden; }
   .strength-fill { height: 100%; border-radius: 2px; transition: width 0.3s, background 0.3s; width: 0%; }
-
+ 
   /* account menu */
   .account-menu { display: flex; flex-direction: column; gap: 0; }
   .account-row { display: flex; align-items: center; gap: 14px; padding: 15px 0; border-bottom: 1px solid var(--border); cursor: pointer; transition: opacity 0.15s; touch-action: manipulation; }
@@ -348,26 +348,26 @@
   .account-row-label { font-size: 14px; color: var(--text); font-weight: 500; }
   .account-row-sub { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
   .account-row-arrow { color: var(--text-dim); font-size: 16px; }
-
+ 
   .account-avatar-lg { width: 72px; height: 72px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; margin: 0 auto 12px; }
   .account-name-lg { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--text); text-align: center; }
   .account-role-lg { font-size: 13px; color: var(--text-muted); text-align: center; margin-top: 4px; }
   .account-id-lg { font-size: 12px; color: var(--gold); text-align: center; margin-top: 4px; letter-spacing: 0.5px; }
-
+ 
   /* install banner */
   .install-banner { background: rgba(232,160,32,0.08); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
   .install-banner-text { flex: 1; font-size: 13px; color: var(--text-muted); line-height: 1.5; }
   .install-banner-text strong { color: var(--text); display: block; margin-bottom: 2px; }
   .install-banner-btn { background: var(--gold); color: var(--bg); border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; padding: 8px 12px; cursor: pointer; white-space: nowrap; touch-action: manipulation; }
-
+ 
 </style>
 </head>
 <body>
-
-
+ 
+ 
 <!-- AUTH: SPLASH / LOGIN / SIGNUP (shown before main app) -->
 <div id="auth-wrap">
-
+ 
   <!-- SPLASH -->
   <div class="auth-wrap" id="auth-splash">
     <div class="auth-hero">
@@ -380,7 +380,7 @@
         <div class="auth-pill">🏦 Bank + Venmo</div>
       </div>
     </div>
-
+ 
     <!-- PWA Install banner (shown on iOS Safari) -->
     <div class="install-banner" id="pwa-banner" style="display:none;">
       <div style="font-size:28px;">📲</div>
@@ -390,23 +390,23 @@
       </div>
       <button class="install-banner-btn" onclick="document.getElementById('pwa-banner').style.display='none'">Got it</button>
     </div>
-
+ 
     <button class="btn-primary" onclick="showAuth('login')" style="margin-top:4px;">Get started →</button>
     <button class="btn-ghost" onclick="continueAsGuest()" style="text-align:center;">Continue as guest (tip only)</button>
     <div class="auth-terms">By continuing you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a></div>
   </div>
-
+ 
   <!-- LOGIN -->
   <div class="auth-wrap" id="auth-login" style="display:none;">
     <div style="text-align:center;padding:10px 0 4px;">
       <div class="auth-logo" style="font-size:28px;">Direct<span>Tip</span></div>
     </div>
-
+ 
     <div class="auth-tabs">
       <button class="auth-tab active" id="tab-login" onclick="authTab('login')">Log in</button>
       <button class="auth-tab" id="tab-signup" onclick="authTab('signup')">Sign up</button>
     </div>
-
+ 
     <!-- LOGIN FORM -->
     <div id="login-form">
       <div class="auth-card">
@@ -422,9 +422,9 @@
         <button class="btn-primary" onclick="doLogin()">Log in →</button>
         <div style="text-align:center;font-size:13px;color:var(--gold);cursor:pointer;" onclick="alert('Password reset coming soon!')">Forgot password?</div>
       </div>
-
+ 
       <div class="auth-divider"><div class="auth-divider-line"></div><span>or</span><div class="auth-divider-line"></div></div>
-
+ 
       <div style="display:flex;flex-direction:column;gap:10px;">
         <button class="btn-social" onclick="socialLogin('Apple')">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
@@ -436,7 +436,7 @@
         </button>
       </div>
     </div>
-
+ 
     <!-- SIGNUP FORM -->
     <div id="signup-form" style="display:none;">
       <div class="auth-card">
@@ -477,12 +477,12 @@
       </div>
       <div class="auth-terms">By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>. Your location is never stored.</div>
     </div>
-
+ 
     <button class="btn-ghost" onclick="showAuth('splash')" style="text-align:center;">← Back</button>
   </div>
-
+ 
 </div>
-
+ 
 <!-- MAIN APP (hidden until logged in) -->
 <div id="main-app" style="display:none;">
 <header>
@@ -495,9 +495,9 @@
   </div>
   <div class="tagline" id="header-tagline">Tip the person directly — zero fees, zero cuts</div>
 </header>
-
+ 
 <div class="screens">
-
+ 
   <!-- SCREEN 1: GPS / Find -->
   <div class="screen active" id="screen-1">
     <div class="steps">
@@ -507,13 +507,13 @@
       <div class="step-line"></div>
       <div class="step-dot">3</div>
     </div>
-
+ 
     <!-- Tab toggle -->
     <div class="search-tabs">
       <button class="tab-btn active" id="tab-nearby" onclick="switchTab('nearby')">📍 Nearby</button>
       <button class="tab-btn" id="tab-manual" onclick="switchTab('manual')">Type ID manually</button>
     </div>
-
+ 
     <!-- NEARBY TAB -->
     <div id="panel-nearby">
       <!-- GPS scanning state -->
@@ -528,7 +528,7 @@
           <div class="gps-range-badge"><div class="gps-range-dot"></div>50m radius</div>
         </div>
       </div>
-
+ 
       <!-- GPS permission prompt -->
       <div id="gps-prompt" class="card">
         <div class="card-label">Nearby workers</div>
@@ -540,7 +540,7 @@
           <div class="help-text" style="margin-top:10px; text-align:center;">Your location is never stored or shared.</div>
         </div>
       </div>
-
+ 
       <!-- GPS denied -->
       <div id="gps-denied" style="display:none;">
         <div class="gps-denied">
@@ -548,7 +548,7 @@
           <div class="gps-denied-body">To use the Nearby feature, allow location access in your browser settings, or switch to the manual ID tab to find someone by their DirectTip ID.</div>
         </div>
       </div>
-
+ 
       <!-- Nearby results -->
       <div id="nearby-results" style="display:none;">
         <div class="card">
@@ -576,7 +576,7 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- MANUAL TAB -->
     <div id="panel-manual" style="display:none;">
       <div class="card">
@@ -610,18 +610,18 @@
         </div>
       </div>
     </div>
-
+ 
     <div class="why-free">
       <div class="why-free-title">🎉 Why DirectTip is free</div>
       <div class="why-row"><div class="why-icon">💸</div><div class="why-text"><strong>$0 taken from tips.</strong> Every cent you send goes straight to the worker — we never touch it.</div></div>
       <div class="why-row"><div class="why-icon">🏦</div><div class="why-text"><strong>Connects to your bank, Venmo, Cash App & more.</strong> Workers cash out directly to wherever they already get paid.</div></div>
       <div class="why-row"><div class="why-icon">📢</div><div class="why-text"><strong>We show small ads at the bottom.</strong> That's our only income. Tips stay completely untouched.</div></div>
     </div>
-
+ 
     <button class="btn-primary" id="btn-next-1" onclick="goToStep2()" disabled>Tip this person →</button>
     <div class="help-text" style="text-align:center;">Workers share their DirectTip ID on receipts, name tags, or anywhere they work.</div>
   </div>
-
+ 
   <!-- SCREEN 2: Amount -->
   <div class="screen" id="screen-2">
     <div class="steps">
@@ -669,7 +669,7 @@
       <button class="btn-primary" id="btn-next-2" onclick="goToStep3()" disabled>Review tip →</button>
     </div>
   </div>
-
+ 
   <!-- SCREEN 3: Review -->
   <div class="screen" id="screen-3">
     <div class="steps">
@@ -734,7 +734,7 @@
       </div>
       <div style="margin-top:12px;" class="help-text">Workers choose where they receive tips. 100% of the amount goes through — DirectTip takes nothing.</div>
     </div>
-
+ 
     <div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:14px 20px;">
       <div style="font-size:13px;color:var(--text-muted);">100% goes to <span id="s3-first-name" style="color:var(--text);font-weight:500;"></span></div>
       <div class="free-badge" style="font-size:10px;padding:2px 8px;">Zero fees</div>
@@ -744,7 +744,7 @@
       <button class="btn-primary" onclick="sendTip()">Send $<span id="s3-btn-amount"></span> tip ✦</button>
     </div>
   </div>
-
+ 
   <!-- SCREEN 4: Processing -->
   <div class="screen" id="screen-4">
     <div class="processing show">
@@ -753,7 +753,7 @@
       <div class="help-text">Securely routing directly to <span id="proc-name" style="color:var(--text);"></span></div>
     </div>
   </div>
-
+ 
   <!-- SCREEN 5: Success -->
   <div class="screen" id="screen-5">
     <div class="success-screen">
@@ -775,10 +775,10 @@
     </div>
     <button class="btn-primary" onclick="resetAll()">Tip someone else →</button>
   </div>
-
+ 
   <!-- SCREEN: WORKER DASHBOARD -->
   <div class="screen" id="screen-dash">
-
+ 
     <!-- Worker identity + check-in -->
     <div class="card">
       <div class="dash-header">
@@ -790,7 +790,7 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- Check-in toggle -->
     <div class="card">
       <div class="checkin-toggle">
@@ -803,7 +803,7 @@
         </div>
       </div>
     </div>
-
+ 
     <!-- Stats -->
     <div class="stat-grid">
       <div class="stat-card highlight">
@@ -827,19 +827,19 @@
         <div class="stat-sub">Since Jan</div>
       </div>
     </div>
-
+ 
     <!-- 7-day bar chart -->
     <div class="card">
       <div class="card-label">Last 7 days</div>
       <div class="bar-chart" id="bar-chart"></div>
     </div>
-
+ 
     <!-- Recent tip feed -->
     <div class="card">
       <div class="card-label">Recent tips</div>
       <div class="tip-feed" id="tip-feed"></div>
     </div>
-
+ 
     <!-- Payout -->
     <div class="card">
       <div class="card-label">Payout method</div>
@@ -858,7 +858,7 @@
       </div>
       <div style="margin-top:10px;" class="help-text" style="text-align:center;">Instant transfer · $0 fee from DirectTip</div>
     </div>
-
+ 
     <!-- Connect more payout methods -->
     <div class="card">
       <div class="card-label">Also connected</div>
@@ -871,11 +871,11 @@
         <div class="payout-btn" onclick="togglePayout(this)"><span class="payout-icon">🍎</span><span class="payout-name">Apple Pay</span><span class="payout-status">Tap to link</span></div>
       </div>
     </div>
-
+ 
   </div>
-
+ 
 </div>
-
+ 
 <script>
 const PROFILES = {
   '@marcus_k': { name:'Marcus K.', role:'Line Cook · Sakura Ramen', initials:'MK', color:'#F59E3A', bg:'rgba(245,158,58,0.12)', lat:0.00018, lng:0.00012 },
@@ -883,13 +883,13 @@ const PROFILES = {
   '@james_d':  { name:'James D.',  role:'Barista · Corner Coffee', initials:'JD', color:'#8B8AE8', bg:'rgba(139,138,232,0.12)', lat:0.00044, lng:0.00025 },
   '@sasha_m':  { name:'Sasha M.',  role:'Hair Stylist · Studio 12', initials:'SM', color:'#E87070', bg:'rgba(232,112,112,0.12)', lat:-0.00005, lng:0.00038 },
 };
-
+ 
 let currentProfile = null;
 let selectedAmount = 0;
 let userLat = null, userLng = null;
 let activeTab = 'nearby';
 let nearbySelected = null;
-
+ 
 // ── TAB SWITCH ──
 function switchTab(tab) {
   activeTab = tab;
@@ -904,18 +904,18 @@ function switchTab(tab) {
   document.getElementById('btn-next-1').disabled = true;
   currentProfile = null;
 }
-
+ 
 // ── GPS ──
 function requestGPS() {
   document.getElementById('gps-prompt').style.display = 'none';
   document.getElementById('gps-scanning').style.display = 'block';
   document.getElementById('gps-status-text').textContent = 'Getting your location...';
   document.getElementById('gps-sub-text').textContent = 'Allow location access when prompted';
-
+ 
   if (!navigator.geolocation) {
     showGPSDenied(); return;
   }
-
+ 
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       userLat = pos.coords.latitude;
@@ -935,12 +935,12 @@ function requestGPS() {
     { timeout: 8000, maximumAge: 30000 }
   );
 }
-
+ 
 function showGPSDenied() {
   document.getElementById('gps-scanning').style.display = 'none';
   document.getElementById('gps-denied').style.display = 'block';
 }
-
+ 
 function haversineMeters(lat1, lng1, lat2, lng2) {
   const R = 6371000;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -948,10 +948,10 @@ function haversineMeters(lat1, lng1, lat2, lng2) {
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
-
+ 
 function finishScan() {
   radarDone = true;
-
+ 
   // Compute distances — demo offsets are tiny so we simulate realistic distances
   const nearby = Object.entries(PROFILES).map(([id, p]) => {
     // Simulate realistic distances between 8m–48m for demo
@@ -959,21 +959,21 @@ function finishScan() {
     const dist = 8 + (seed % 40);
     return { id, ...p, dist };
   }).filter(p => p.dist <= 50).sort((a,b) => a.dist - b.dist);
-
+ 
   document.getElementById('gps-scanning').style.display = 'none';
   document.getElementById('nearby-results').style.display = 'block';
-
+ 
   const count = nearby.length;
   document.getElementById('nearby-count').textContent = count + ' worker' + (count !== 1 ? 's' : '') + ' within 50m';
-
+ 
   const list = document.getElementById('nearby-list');
   list.innerHTML = '';
-
+ 
   if (count === 0) {
     list.innerHTML = '<div class="no-nearby">No workers found nearby.<br>Try the manual ID tab or ask them to check in on the app.</div>';
     return;
   }
-
+ 
   nearby.forEach((p, i) => {
     const distClass = p.dist <= 15 ? 'dist-close' : p.dist <= 35 ? 'dist-mid' : 'dist-far';
     const distLabel = p.dist < 1 ? 'Right here' : Math.round(p.dist) + 'm away';
@@ -989,7 +989,7 @@ function finishScan() {
     `;
     card.onclick = () => selectNearby(p.id, card, distClass, distLabel);
     list.appendChild(card);
-
+ 
     // Stagger appearance
     card.style.opacity = '0';
     card.style.transform = 'translateX(-8px)';
@@ -1000,14 +1000,14 @@ function finishScan() {
     }, i * 120 + 80);
   });
 }
-
+ 
 function selectNearby(id, cardEl, distClass, distLabel) {
   document.querySelectorAll('.nearby-card').forEach(c => c.classList.remove('selected'));
   cardEl.classList.add('selected');
   const p = PROFILES[id];
   nearbySelected = { id, ...p, distClass, distLabel };
   currentProfile = { id, ...p };
-
+ 
   const av = document.getElementById('nearby-sel-avatar');
   av.textContent = p.initials;
   av.style.background = p.bg;
@@ -1017,7 +1017,7 @@ function selectNearby(id, cardEl, distClass, distLabel) {
   document.getElementById('nearby-selected-preview').style.display = 'block';
   document.getElementById('btn-next-1').disabled = false;
 }
-
+ 
 function rescan() {
   nearbySelected = null;
   currentProfile = null;
@@ -1030,13 +1030,13 @@ function rescan() {
   document.getElementById('gps-sub-text').textContent = 'Looking for workers within 50 meters';
   setTimeout(finishScan, 2200);
 }
-
+ 
 // ── MANUAL TAB ──
 function fillId(id) {
   document.getElementById('tip-id-input').value = id;
   lookupId(id);
 }
-
+ 
 document.getElementById('tip-id-input').addEventListener('input', function() {
   const val = this.value.trim().toLowerCase();
   if (val.length > 2) lookupId(val);
@@ -1046,7 +1046,7 @@ document.getElementById('tip-id-input').addEventListener('input', function() {
     currentProfile = null;
   }
 });
-
+ 
 function lookupId(val) {
   const key = val.startsWith('@') ? val : '@' + val;
   const p = PROFILES[key] || PROFILES[val];
@@ -1067,7 +1067,7 @@ function lookupId(val) {
     currentProfile = null;
   }
 }
-
+ 
 // ── FLOW ──
 function goToStep2() {
   if (!currentProfile) return;
@@ -1076,7 +1076,7 @@ function goToStep2() {
   s2av.textContent = p.initials; s2av.style.background = p.bg; s2av.style.color = p.color;
   document.getElementById('s2-name').textContent = p.name;
   document.getElementById('s2-role').textContent = p.role;
-
+ 
   const distBadge = document.getElementById('s2-dist-badge');
   if (nearbySelected && nearbySelected.id === p.id) {
     distBadge.style.display = 'block';
@@ -1087,7 +1087,7 @@ function goToStep2() {
   }
   showScreen(2);
 }
-
+ 
 function selectAmount(amt, btn) {
   document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
@@ -1095,14 +1095,14 @@ function selectAmount(amt, btn) {
   document.getElementById('custom-amount').value = '';
   document.getElementById('btn-next-2').disabled = false;
 }
-
+ 
 function handleCustomAmount(input) {
   const val = parseFloat(input.value);
   document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
   if (!isNaN(val) && val > 0) { selectedAmount = val; document.getElementById('btn-next-2').disabled = false; }
   else { selectedAmount = 0; document.getElementById('btn-next-2').disabled = true; }
 }
-
+ 
 function goToStep3() {
   if (!selectedAmount) return;
   const p = currentProfile;
@@ -1117,7 +1117,7 @@ function goToStep3() {
   else { document.getElementById('s3-msg-preview').style.display = 'none'; }
   showScreen(3);
 }
-
+ 
 function sendTip() {
   document.getElementById('proc-name').textContent = currentProfile.name;
   showScreen(4);
@@ -1133,12 +1133,12 @@ function sendTip() {
     showScreen(5);
   }, 2200);
 }
-
+ 
 function goBack(fromScreen) {
   showScreen(fromScreen - 1);
   if (fromScreen === 2) { selectedAmount = 0; document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected')); document.getElementById('custom-amount').value = ''; document.getElementById('btn-next-2').disabled = true; }
 }
-
+ 
 function resetAll() {
   currentProfile = null; selectedAmount = 0; nearbySelected = null;
   document.getElementById('tip-id-input').value = '';
@@ -1157,13 +1157,13 @@ function resetAll() {
   radarDone = false;
   showScreen(1);
 }
-
+ 
 function showScreen(n) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + n).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
+ 
 function amountToWords(amt) {
   if (amt <= 1) return 'A small gesture of appreciation';
   if (amt <= 3) return 'A kind thank-you';
@@ -1172,11 +1172,11 @@ function amountToWords(amt) {
   if (amt <= 30) return 'Wow, very generous!';
   return "An extraordinary tip — you're amazing!";
 }
-
+ 
 // ── AUTH STATE ──
 let currentUser = null;
 let selectedRole = null;
-
+ 
 function showAuth(screen) {
   document.getElementById('auth-splash').style.display = 'none';
   document.getElementById('auth-login').style.display = 'none';
@@ -1190,7 +1190,7 @@ function showAuth(screen) {
     document.getElementById('auth-login').style.gap = '14px';
   }
 }
-
+ 
 function authTab(tab) {
   document.getElementById('tab-login').classList.toggle('active', tab === 'login');
   document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
@@ -1201,7 +1201,7 @@ function authTab(tab) {
   if (tab === 'signup') document.getElementById('signup-form').style.flexDirection = 'column';
   if (tab === 'signup') document.getElementById('signup-form').style.gap = '14px';
 }
-
+ 
 function selectRole(role) {
   selectedRole = role;
   document.getElementById('role-worker').classList.toggle('selected', role === 'worker');
@@ -1210,7 +1210,7 @@ function selectRole(role) {
   if (role === 'worker') document.getElementById('signup-role-field').style.flexDirection = 'column';
   if (role === 'worker') document.getElementById('signup-role-field').style.gap = '7px';
 }
-
+ 
 function checkStrength(val) {
   const fill = document.getElementById('strength-fill');
   let score = 0;
@@ -1223,7 +1223,7 @@ function checkStrength(val) {
   fill.style.width = score ? widths[score-1] : '0%';
   fill.style.background = score ? colors[score-1] : '';
 }
-
+ 
 function doLogin() {
   const email = document.getElementById('login-email').value.trim();
   const pass = document.getElementById('login-password').value;
@@ -1234,7 +1234,7 @@ function doLogin() {
   currentUser = { name: 'Marcus K.', role: 'Line Cook · Sakura Ramen', id: '@marcus_k', type: 'worker', initials: 'MK', color: '#F59E3A', bg: 'rgba(245,158,58,0.12)' };
   enterApp();
 }
-
+ 
 function doSignup() {
   const name = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
@@ -1254,17 +1254,17 @@ function doSignup() {
   currentUser = { name, role: roleText, id: handle, type: selectedRole, initials, color: colors[ci], bg: bgs[ci] };
   enterApp();
 }
-
+ 
 function socialLogin(provider) {
   currentUser = { name: 'Marcus K.', role: 'Line Cook · Sakura Ramen', id: '@marcus_k', type: 'worker', initials: 'MK', color: '#F59E3A', bg: 'rgba(245,158,58,0.12)' };
   enterApp();
 }
-
+ 
 function continueAsGuest() {
   currentUser = { name: 'Guest', role: 'Tipper', id: '', type: 'tipper', initials: '?', color: '#9A8E78', bg: 'rgba(154,142,120,0.1)' };
   enterApp();
 }
-
+ 
 function enterApp() {
   document.getElementById('auth-wrap').style.display = 'none';
   document.getElementById('main-app').style.display = 'contents';
@@ -1283,7 +1283,7 @@ function enterApp() {
   // show header
   document.querySelector('header').style.display = 'flex';
 }
-
+ 
 function doLogout() {
   currentUser = null;
   selectedRole = null;
@@ -1292,7 +1292,7 @@ function doLogout() {
   showAuth('splash');
   document.querySelector('header').style.display = 'none';
 }
-
+ 
 // extend switchView to handle account tab
 const _origSwitchView = switchView;
 window.switchView = function(view) {
@@ -1309,7 +1309,7 @@ window.switchView = function(view) {
     _origSwitchView(view);
   }
 };
-
+ 
 // ── PWA INSTALL PROMPT ──
 // Show iOS install hint if in Safari and not already installed
 window.addEventListener('load', () => {
@@ -1324,12 +1324,12 @@ window.addEventListener('load', () => {
     navigator.serviceWorker.register('sw.js').catch(() => {});
   }
 });
-
+ 
 // Init auth - hide main app and header until logged in
 document.getElementById('main-app').style.display = 'none';
 document.querySelector('header').style.display = 'none';
 showAuth('splash');
-
+ 
 // Init — show nearby tab panels correctly
 document.getElementById('panel-nearby').style.display = 'flex';
 // Init — show nearby tab panels correctly
@@ -1337,16 +1337,16 @@ document.getElementById('panel-nearby').style.display = 'flex';
 document.getElementById('panel-nearby').style.flexDirection = 'column';
 document.getElementById('panel-nearby').style.gap = '18px';
 document.getElementById('panel-manual').style.display = 'none';
-
+ 
 // ── VIEW SWITCHER ──
 let currentView = 'tip';
 let lastTipScreen = 'screen-1';
-
+ 
 function switchView(view) {
   currentView = view;
   document.getElementById('nav-tip').classList.toggle('active', view === 'tip');
   document.getElementById('nav-dash').classList.toggle('active', view === 'dash');
-
+ 
   if (view === 'tip') {
     document.getElementById('header-tagline').style.display = '';
     document.getElementById('header-status').textContent = '';
@@ -1362,14 +1362,14 @@ function switchView(view) {
   }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
+ 
 // track which tip screen we're on
 const origShowScreen = showScreen;
 window.showScreen = function(n) {
   if (currentView === 'tip') lastTipScreen = 'screen-' + n;
   origShowScreen(n);
 }
-
+ 
 // ── DASHBOARD INIT ──
 let dashInited = false;
 function initDashboard() {
@@ -1378,7 +1378,7 @@ function initDashboard() {
   buildBarChart();
   buildFeed();
 }
-
+ 
 const BAR_DATA = [
   { day: 'Mon', amt: 22 },
   { day: 'Tue', amt: 41 },
@@ -1388,7 +1388,7 @@ const BAR_DATA = [
   { day: 'Sat', amt: 29 },
   { day: 'Sun', amt: 34, today: true },
 ];
-
+ 
 function buildBarChart() {
   const max = Math.max(...BAR_DATA.map(d => d.amt));
   const container = document.getElementById('bar-chart');
@@ -1407,7 +1407,7 @@ function buildBarChart() {
     });
   }, 80);
 }
-
+ 
 const FEED_DATA = [
   { initials:'AJ', color:'#8B8AE8', bg:'rgba(139,138,232,0.12)', name:'Alex J.', msg:'Great ramen, seriously the best!', amt:10, time:'2m ago' },
   { initials:'SR', color:'#5CD6A2', bg:'rgba(92,214,162,0.12)', name:'Someone nearby', msg:'', amt:5, time:'18m ago' },
@@ -1416,7 +1416,7 @@ const FEED_DATA = [
   { initials:'ML', color:'#E87070', bg:'rgba(232,112,112,0.12)', name:'Morgan L.', msg:'The broth was incredible', amt:15, time:'2h ago' },
   { initials:'SR', color:'#5CD6A2', bg:'rgba(92,214,162,0.12)', name:'Someone nearby', msg:'', amt:1, time:'3h ago' },
 ];
-
+ 
 function buildFeed() {
   const feed = document.getElementById('tip-feed');
   feed.innerHTML = '';
@@ -1437,7 +1437,7 @@ function buildFeed() {
     feed.appendChild(el);
   });
 }
-
+ 
 // ── CHECK-IN TOGGLE ──
 let checkedIn = true;
 function toggleCheckin() {
@@ -1458,7 +1458,7 @@ function toggleCheckin() {
     sub.textContent = 'Tap to go live and start receiving tips';
   }
 }
-
+ 
 // ── CASHOUT ──
 function showCashout() {
   const btn = event.target;
@@ -1471,7 +1471,7 @@ function showCashout() {
   }, 1800);
 }
 </script>
-
+ 
   <!-- SCREEN: ACCOUNT -->
   <div class="screen" id="screen-account">
     <div class="card" style="text-align:center;padding:28px 24px 22px;">
@@ -1525,9 +1525,9 @@ function showCashout() {
     </div>
     <div class="help-text" style="text-align:center;">DirectTip v1.0 · Made by ConCorp · 100% free forever</div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" id="nav-tip" onclick="switchView('tip')">
@@ -1546,10 +1546,10 @@ function showCashout() {
     <div class="nav-indicator"></div>
   </button>
 </nav>
-
+ 
 <!-- AD BAR -->
 <div class="ad-bar">
-  <div class="ad-label">Advertisement — keeps DirectTip free</div>
+  <div class="ad-label">Ad</div>
   <div class="ad-slot" id="ad-slot">
     <div class="ad-slide visible" id="ad-0">
       <div class="ad-icon">🍕</div>
@@ -1572,8 +1572,8 @@ function showCashout() {
       <div class="ad-cta">Save →</div>
     </div>
   </div>
-  <div class="ad-free-note">Ads keep tips 100% free for workers &amp; tippers</div>
-
-
+ 
+ 
+ 
 </body>
 </html>
