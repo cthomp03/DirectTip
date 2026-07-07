@@ -1,8 +1,10 @@
-// DirectTip Service Worker v2.0
+// DirectTip Service Worker v3.0
 // v2: fixed offline fallback path, Firebase-safe fetch strategy,
 //     caches the Firebase SDK modules for offline boot.
+// v3: network-first for page navigations so app updates arrive on next
+//     launch automatically (no more cache-version bumps for HTML changes)
 
-const CACHE = 'directtip-v2';
+const CACHE = 'directtip-v3';
 const ASSETS = [
   '/DirectTip/index.html',
   '/DirectTip/manifest.json',
@@ -60,6 +62,23 @@ self.addEventListener('fetch', e => {
   // matching so the cached shell still serves offline
   const matchOpts = { ignoreSearch: e.request.mode === 'navigate' };
 
+  // NETWORK-FIRST for page loads: always try to fetch the latest
+  // index.html so deploys appear on next launch; fall back to cache offline.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).then(response => {
+        if (response && response.status === 200) {
+          const clone = response.clone();
+          caches.open(CACHE).then(cache => cache.put(e.request, clone));
+        }
+        return response;
+      }).catch(() => caches.match(e.request, matchOpts)
+          .then(c => c || caches.match('/DirectTip/index.html')))
+    );
+    return;
+  }
+
+  // CACHE-FIRST for everything else (fonts, SDK modules, manifest)
   e.respondWith(
     caches.match(e.request, matchOpts).then(cached => {
       if (cached) return cached;
