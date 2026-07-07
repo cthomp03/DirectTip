@@ -22,7 +22,7 @@
     --red: #E05555; --red-bg: rgba(224,85,85,0.1);
     --radius: 16px; --radius-sm: 10px;
   }
-  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 0 80px; -webkit-tap-highlight-color: transparent; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; align-items: center; padding: 0 0 80px; -webkit-tap-highlight-color: transparent; }
 
   header { width: 100%; max-width: 480px; padding: max(44px, calc(env(safe-area-inset-top) + 18px)) 24px 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
   .logo { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: var(--gold); }
@@ -160,11 +160,11 @@
     z-index: 100;
     display: flex; align-items: center; justify-content: center;
     padding: 0 12px;
-    height: 36px;
+    height: 30px;
   }
   .ad-label { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-dim); margin-right: 8px; white-space: nowrap; flex-shrink: 0; }
   .ad-slot {
-    flex: 1; max-width: 480px; height: 28px;
+    flex: 1; max-width: 480px; height: 24px;
     background: transparent;
     overflow: hidden; position: relative;
     display: flex; align-items: center;
@@ -222,20 +222,22 @@
   }
   .nav-btn {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; padding: 10px 8px; border: none; background: transparent;
+    gap: 2px; padding: 6px 8px; border: none; background: transparent;
     color: var(--text-dim); cursor: pointer; transition: color 0.15s;
-    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
     touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-    min-height: 56px;
+    min-height: 48px;
   }
   .nav-btn.active { color: var(--gold); }
-  .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
   .nav-indicator { width: 4px; height: 4px; border-radius: 50%; background: var(--gold); opacity: 0; transition: opacity 0.2s; margin-top: 1px; }
   .nav-btn.active .nav-indicator { opacity: 1; }
 
   /* ad bar sits just above the bottom nav */
-  .ad-bar { bottom: calc(56px + env(safe-area-inset-bottom)) !important; z-index: 150; }
-  body { padding-bottom: calc(110px + env(safe-area-inset-bottom)) !important; }
+  .ad-bar { bottom: calc(49px + env(safe-area-inset-bottom)) !important; z-index: 150; }
+  /* Generous clearance: nav (49px) + ad bar (31px) + safe area + 80px breathing
+     room so the last button on any screen always scrolls fully clear of the bars */
+  body { padding-bottom: calc(160px + env(safe-area-inset-bottom)) !important; }
 
   /* ── DASHBOARD ── */
   .dash-header { display: flex; align-items: center; gap: 14px; margin-bottom: 2px; }
