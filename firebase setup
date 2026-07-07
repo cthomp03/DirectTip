@@ -1,0 +1,123 @@
+# DirectTip — Firebase Setup Guide
+
+The app now has a full Firebase sync layer built in, but it ships **disabled**.
+Until you paste your config in, everything runs exactly like before (localStorage
+only), so you can deploy this version today with zero risk.
+
+The architecture is **local-first**: localStorage stays the instant source of
+truth the UI reads from, and Firestore syncs in the background. That's why the
+app never shows loading spinners and keeps working offline as a PWA.
+
+---
+
+## Step 1 — Create the Firebase project (~3 min)
+
+1. Go to https://console.firebase.google.com and click **Add project**
+2. Name it `directtip` (or anything). Google Analytics: optional, disable to keep it simple.
+3. Once created, click the **web icon `</>`** on the project overview page to add a web app
+4. Nickname: `DirectTip PWA`. Do NOT check "Firebase Hosting" (you're on GitHub Pages).
+5. Firebase shows you a `firebaseConfig` object — **copy it**
+
+## Step 2 — Paste the config into index.html
+
+Open `index.html`, find this block near the top of the main `<script>`:
+
+```js
+const FIREBASE_CONFIG = {
+  apiKey: "PASTE_ME",
+  ...
+};
+```
+
+Replace it with your real values. The app detects a real config automatically —
+no other switch to flip.
+
+> **Is it safe to commit this to a public GitHub repo? Yes.** The Firebase web
+> config is an identifier, not a secret — every visitor's browser needs it to
+> talk to Firebase. Your security boundary is the **rules** in Step 4, not the
+> config. (People trip on this constantly.)
+
+## Step 3 — Enable Authentication
+
+In the Firebase console → **Build → Authentication → Get started**:
+
+1. Enable **Email/Password** (used by worker + tipper signups)
+2. Enable **Anonymous** (used silently so guests can send tips)
+
+## Step 4 — Create Firestore + security rules
+
+Console → **Build → Firestore Database → Create database**:
+
+1. Choose **Production mode** (locked by default — good)
+2. Pick a US region (e.g. `us-central1`) — closest to you and can't be changed later
+
+Then go to the **Rules** tab and replace everything with:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Worker profiles: public directory (that's the point — customers
+    // look workers up). Only real (non-anonymous) accounts can claim a
+    // handle, and only the owner can edit their profile afterwards.
+    match /workers/{handle} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.auth.token.firebase.sign_in_provider != 'anonymous'
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+
+    // Tips: anyone signed in (including anonymous guests) can create one,
+    // with basic sanity limits. No edits or deletes ever.
+    match /tips/{tipId} {
+      allow create: if request.auth != null
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0
+        && request.resource.data.amount <= 500
+        && request.resource.data.to is string;
+      allow read: if request.auth != null;
+      allow update, delete: if false;
+    }
+  }
+}
+```
+
+Click **Publish**.
+
+## Step 5 — Deploy
+
+Commit + push `index.html` and `sw.js` to the repo. GitHub Pages picks it up
+in a minute or two. Because the service worker cache bumped to `directtip-v2`,
+existing installs (including your iPhone PWA) will pull the new version on
+their next launch.
+
+---
+
+## What changes once Firebase is live
+
+| Feature | Before (local-only) | After (Firebase) |
+|---|---|---|
+| Worker signup | Fake demo auth | Real email/password accounts |
+| Handle availability | Checked on this device only | Checked globally |
+| Typing an ID to tip | Only finds workers created on *your* phone | Finds any worker, any device |
+| QR scan | Works via profile embedded in the QR itself | Same, plus cloud lookup |
+| Tips | Stay on the sender's phone | Land in the worker's real feed/earnings |
+| Guest tipping | Works | Works (silent anonymous auth) |
+
+## Known limitations / future hardening
+
+- **Tip reads are open to any signed-in user.** Locking reads down to just the
+  recipient requires storing the recipient's `uid` on each tip (`toUid`) and
+  querying by that — Firestore rules can't do per-document lookups on list
+  queries. Fine for MVP; worth doing before real money flows.
+- **Payments are still simulated.** The "processing" screen doesn't move money.
+  Stripe Connect is the standard way to do direct worker payouts when you get there.
+- **Check-in GPS** still writes `lat: 0, lng: 0` — wiring real coordinates into
+  the worker doc on check-in is a natural next feature (one `setDoc` + a
+  Firestore query by geohash or a simple client-side distance filter).
+- The old demo login fallback ("any email logs in as marcus") only exists in
+  local-only mode and disappears entirely once Firebase is enabled.
