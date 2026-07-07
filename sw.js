@@ -1,24 +1,40 @@
-// DirectTip Service Worker v1.0
-// Caches the app shell so it works offline and installs to home screen
+// DirectTip Service Worker v2.0
+// v2: fixed offline fallback path, Firebase-safe fetch strategy,
+//     caches the Firebase SDK modules for offline boot.
 
-const CACHE = 'directtip-v1';
+const CACHE = 'directtip-v2';
 const ASSETS = [
   '/DirectTip/index.html',
   '/DirectTip/manifest.json',
   'https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap'
 ];
 
+// Hosts whose GET responses are safe to cache (static content)
+const CACHEABLE_HOSTS = [
+  self.location.hostname,        // our own origin (GitHub Pages)
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+  'www.gstatic.com'              // Firebase SDK modules (static, versioned URLs)
+];
+
+// Hosts that must NEVER be intercepted — live API traffic.
+// Caching these breaks Firestore listeners and Auth token refresh.
+const BYPASS_HOSTS = [
+  'firestore.googleapis.com',
+  'identitytoolkit.googleapis.com',
+  'securetoken.googleapis.com',
+  'firebaseinstallations.googleapis.com'
+];
+
 // Install — cache all core assets
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => {
-      return cache.addAll(ASSETS).catch(() => {});
-    })
+    caches.open(CACHE).then(cache => cache.addAll(ASSETS).catch(() => {}))
   );
   self.skipWaiting();
 });
 
-// Activate — clean up old caches
+// Activate — clean up old caches (removes directtip-v1)
 self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
@@ -28,11 +44,24 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
-// Fetch — serve from cache first, fall back to network
+// Fetch — cache-first for static assets, pass-through for API traffic
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+
+  const url = new URL(e.request.url);
+
+  // Let Firebase API traffic go straight to the network, untouched
+  if (BYPASS_HOSTS.includes(url.hostname)) return;
+
+  // Only cache known-static hosts; anything else passes through
+  if (!CACHEABLE_HOSTS.includes(url.hostname)) return;
+
+  // QR deep links arrive as index.html?tip=... — ignore the query when
+  // matching so the cached shell still serves offline
+  const matchOpts = { ignoreSearch: e.request.mode === 'navigate' };
+
   e.respondWith(
-    caches.match(e.request).then(cached => {
+    caches.match(e.request, matchOpts).then(cached => {
       if (cached) return cached;
       return fetch(e.request).then(response => {
         if (response && response.status === 200) {
@@ -40,7 +69,7 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE).then(cache => cache.put(e.request, clone));
         }
         return response;
-      }).catch(() => caches.match('/directtip.html'));
+      }).catch(() => caches.match('/DirectTip/index.html'));
     })
   );
 });
